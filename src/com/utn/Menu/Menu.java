@@ -1,5 +1,7 @@
 package com.utn.Menu;
 
-public class Menu {
+public interface Menu {
+
+    public abstract void Menu();
 
 }
