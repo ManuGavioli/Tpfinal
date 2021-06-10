@@ -4,6 +4,7 @@ import com.utn.Menu.Inicio;
 
 public class Main {
     public static void main(String[] args) {
-        Inicio.Inicio();
+        Inicio inicio = new Inicio();
+        inicio.Menu();
     }
 }
