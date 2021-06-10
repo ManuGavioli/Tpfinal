@@ -11,8 +11,8 @@ public abstract class itemVenta {
     private String nombre;
     private ClasificacionEdad clasificacion;
 
-    public itemVenta(UUID ID, float precio, int stock, String nombre, ClasificacionEdad clasificacion) {
-        this.ID = ID;
+    public itemVenta(float precio, int stock, String nombre, ClasificacionEdad clasificacion) {
+        this.ID = UUID.randomUUID();
         this.precio = precio;
         this.stock = stock;
         this.nombre = nombre;
