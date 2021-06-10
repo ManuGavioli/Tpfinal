@@ -12,10 +12,10 @@ public class Libro extends itemVenta{
 
     //Constructor
 
-    public Libro(UUID ID, float precio, int stock, String nombre,
+    public Libro(float precio, int stock, String nombre,
                  ClasificacionEdad clasificacion, GenerosL genero,
                  String autor, String editorial) {
-        super(ID, precio, stock, nombre, clasificacion);
+        super(precio, stock, nombre, clasificacion);
         Genero = genero;
         Autor = autor;
         Editorial = editorial;
@@ -40,5 +40,10 @@ public class Libro extends itemVenta{
     @Override
     public void Venta() {
 
+    }
+
+    @Override
+    public String toString() {
+        return "Libro (" + super.toString() + ", Genero= " + this.Genero + ", Autor=" + this.Autor + ", Editorial=" + this.Editorial + ")";
     }
 }

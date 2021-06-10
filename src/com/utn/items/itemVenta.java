@@ -1,6 +1,7 @@
 package com.utn.items;
 
 import com.utn.items.enums.ClasificacionEdad;
+import org.w3c.dom.ls.LSOutput;
 
 import java.util.UUID;
 
@@ -27,4 +28,9 @@ public abstract class itemVenta {
 
     public abstract void Venta();
 
+    @Override
+    public String toString() {
+        return "Item(ID= " + this.ID + ", Nombre= " + this.nombre + ", Stock= " +
+                this.stock + ", Clasificacion= " + this.clasificacion + ", Precio= " + this.precio + ")";
+    }
 }

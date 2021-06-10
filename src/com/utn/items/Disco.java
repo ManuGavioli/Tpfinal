@@ -63,6 +63,8 @@ public class Disco extends itemVenta{
 
     @Override
     public String toString() {
-        return super.toString();
+        return "Disco (" + super.toString() + ", Solista / Banda = " +
+                this.Solo_Banda + ", Canciones = " + this.Canciones + ", Genero = " +
+                this.Genero + ", Fecha de lanzamiento = " + this.FechaLanzamiento + ")";
     }
 }

@@ -9,8 +9,8 @@ public class JuegoMesa extends itemVenta{
 
     private GenerosJM genero;
 
-    public JuegoMesa(UUID ID, float precio, int stock, String nombre, ClasificacionEdad clasificacion, GenerosJM genero) {
-        super(ID, precio, stock, nombre, clasificacion);
+    public JuegoMesa(float precio, int stock, String nombre, ClasificacionEdad clasificacion, GenerosJM genero) {
+        super(precio, stock, nombre, clasificacion);
         this.genero = genero;
     }
 
@@ -32,5 +32,10 @@ public class JuegoMesa extends itemVenta{
     @Override
     public void Venta() {
 
+    }
+
+    @Override
+    public String toString() {
+        return "Juego de mesa(" + super.toString() + ", Genero= " + this.genero + ")";
     }
 }
