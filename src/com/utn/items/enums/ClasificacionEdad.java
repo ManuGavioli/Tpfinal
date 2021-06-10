@@ -1,7 +1,7 @@
 package com.utn.items.enums;
 
 public enum ClasificacionEdad {
-    MENORES,
+    NINIOS,
     ADOLECENTES,
-    MAYORES
+    ADULTOS
 }

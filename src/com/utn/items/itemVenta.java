@@ -12,13 +12,19 @@ public abstract class itemVenta {
     private String nombre;
     private ClasificacionEdad clasificacion;
 
-    public itemVenta(float precio, int stock, String nombre, ClasificacionEdad clasificacion) {
+    //region Constructores
+    public itemVenta() {
+
+    }
+
+    public itemVenta(float precio, String nombre, ClasificacionEdad clasificacion) {
         this.ID = UUID.randomUUID();
         this.precio = precio;
-        this.stock = stock;
+        this.stock = stock++;
         this.nombre = nombre;
         this.clasificacion = clasificacion;
     }
+    //endregion
 
     public abstract void CargarItems();
 
@@ -27,6 +33,8 @@ public abstract class itemVenta {
     public abstract void BuscarItems();
 
     public abstract void Venta();
+
+    public abstract void DarDeBaja();
 
     @Override
     public String toString() {

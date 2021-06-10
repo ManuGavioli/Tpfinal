@@ -10,17 +10,43 @@ public class Libro extends itemVenta{
     private String Autor;
     private String Editorial;
 
-    //Constructor
+    //region Constructor
 
-    public Libro(float precio, int stock, String nombre,
+    public Libro(float precio, String nombre,
                  ClasificacionEdad clasificacion, GenerosL genero,
                  String autor, String editorial) {
-        super(precio, stock, nombre, clasificacion);
+        super(precio, nombre, clasificacion);
         Genero = genero;
         Autor = autor;
         Editorial = editorial;
     }
-    //Setters y Getters
+
+    //endregion
+
+    //region Getters y Setters
+
+    public GenerosL getGenero() {
+        return Genero;
+    }
+    public void setGenero(GenerosL genero) {
+        Genero = genero;
+    }
+
+    public String getAutor() {
+        return Autor;
+    }
+    public void setAutor(String autor) {
+        Autor = autor;
+    }
+
+    public String getEditorial() {
+        return Editorial;
+    }
+    public void setEditorial(String editorial) {
+        Editorial = editorial;
+    }
+
+    //endregion
 
     @Override
     public void CargarItems() {
@@ -39,6 +65,11 @@ public class Libro extends itemVenta{
 
     @Override
     public void Venta() {
+
+    }
+
+    @Override
+    public void DarDeBaja() {
 
     }
 

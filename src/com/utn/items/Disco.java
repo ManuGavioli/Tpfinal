@@ -14,21 +14,21 @@ public class Disco extends itemVenta{
     private GenerosD Genero;
     private LocalDate FechaLanzamiento;
 
-
-    ///Construcctores
-    public Disco(float precio, int stock, String nombre, ClasificacionEdad clasificacion) {
-        super(precio, stock, nombre, clasificacion);
+    //region Constructores
+    public Disco(float precio,String nombre, ClasificacionEdad clasificacion) {
+        super(precio, nombre, clasificacion);
     }
 
-    public Disco(float precio, int stock, String nombre, ClasificacionEdad clasificacion, String solo_Banda, ArrayList<String> canciones, GenerosD genero, LocalDate fechaLanzamiento) {
-        super(precio, stock, nombre, clasificacion);
+    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, ArrayList<String> canciones, GenerosD genero, LocalDate fechaLanzamiento) {
+        super(precio, nombre, clasificacion);
         Solo_Banda = solo_Banda;
         Canciones = canciones;
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
     }
+    //endregion
 
-    ///Getters y Setters
+    //region Getters y Setters
     public String getSolo_Banda() { return Solo_Banda; }
     public void setSolo_Banda(String solo_Banda) { Solo_Banda = solo_Banda; }
 
@@ -40,6 +40,7 @@ public class Disco extends itemVenta{
 
     public LocalDate getFechaLanzamiento() { return FechaLanzamiento; }
     public void setFechaLanzamiento(LocalDate fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
+    //endregion
 
     @Override
     public void CargarItems() {
@@ -58,6 +59,11 @@ public class Disco extends itemVenta{
 
     @Override
     public void Venta() {
+
+    }
+
+    @Override
+    public void DarDeBaja() {
 
     }
 
