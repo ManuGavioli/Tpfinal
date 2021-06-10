@@ -11,6 +11,14 @@ public abstract class itemVenta {
     private String nombre;
     private ClasificacionEdad clasificacion;
 
+    public itemVenta(UUID ID, float precio, int stock, String nombre, ClasificacionEdad clasificacion) {
+        this.ID = ID;
+        this.precio = precio;
+        this.stock = stock;
+        this.nombre = nombre;
+        this.clasificacion = clasificacion;
+    }
+
     public abstract void CargarItems();
 
     public abstract void MostrarListado();
