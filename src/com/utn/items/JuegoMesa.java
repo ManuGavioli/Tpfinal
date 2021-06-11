@@ -1,10 +1,11 @@
 package com.utn.items;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosJM;
-
+import java.io.*;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class JuegoMesa extends itemVenta{
 
@@ -34,31 +35,97 @@ public class JuegoMesa extends itemVenta{
     //endregion
 
     @Override
+    public void CrearArchivo() {
+        try{
+            BufferedWriter fSalida = new BufferedWriter(new FileWriter(new File("juegosDeMesa.json")));
+            fSalida.close();
+
+        } catch(IOException e) {
+            System.out.println(e.getMessage());
+
+        }
+    }
+
+    @Override
+    public Seccion LeerArchivo() {
+        Seccion<JuegoMesa> aux = new Seccion<>(50);
+        try {
+            FileInputStream fileInputStream = new FileInputStream("juegosDeMesa.json");
+
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+            aux = (Seccion<JuegoMesa>) objectInputStream.readObject();
+
+        } catch (FileNotFoundException e){
+            System.out.println("No se encontro el archivo...");
+            return null;
+
+        } catch(IOException e) {
+            e.printStackTrace();
+
+        } catch (ClassNotFoundException e) {
+            System.out.println("No se encontro la clase...");
+        }
+
+        return aux;
+    }
+
+    @Override
+    public void EscribirArchivo(Seccion datoDeSeccion) {
+        try{
+            FileOutputStream fileOutputStream = new FileOutputStream("juegosDeMesa.json");
+            ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutputStream);
+
+            objectOutput.writeObject(datoDeSeccion);
+
+        } catch (FileNotFoundException e) {
+            System.out.println("No se encontro el archivo...");
+            System.out.println("Creando el archivo...");
+            CrearArchivo();
+            System.out.println("Archivo Creado!");
+            EscribirArchivo(datoDeSeccion);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    @Override
     public void CargarItems() {
         //Pide al staff que cargue un item
-        Scanner scanner= new Scanner(System.in);
-        System.out.println("Ingrese el nombre del juego de mesa: ");
-        String nombre = scanner.nextLine(); //no sabemos si es nextline
+        String control = null;
 
-        System.out.println("Ingrese el precio del juego de mesa: ");
-        float numero = scanner.nextFloat();
+        do{
+            Scanner scanner= new Scanner(System.in);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
 
-        System.out.println("""
+            System.out.println("Ingrese el nombre del juego de mesa: ");
+            String nombre = scanner.nextLine();
+
+            System.out.println("Ingrese el precio del juego de mesa: ");
+            float numero = scanner.nextFloat();
+
+            //region ClasificacionPorEdad
+            System.out.println("""
                 Ingrese la clasificacion de edad del juego de mesa:\s
                 1 - Niños.
                 2 - Adolecentes.
                 3 - Adultos.
                 """);
-        int Edad = scanner.nextInt();
-        ClasificacionEdad clasEdad = null;
-        switch (Edad) {
-            case 1 -> clasEdad = ClasificacionEdad.NINIOS;
-            case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
-            case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
-            default -> System.out.println("Opcion no valida. Reintente");
-        }
+            int Edad = scanner.nextInt();
+            ClasificacionEdad clasEdad = null;
+            switch (Edad) {
+                case 1 -> clasEdad = ClasificacionEdad.NINIOS;
+                case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
+                case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
+                default -> System.out.println("Opcion no valida. Reintente");
+            }
+            //endregion
 
-        System.out.println("""
+            //region ClasificacionPorGenero
+            System.out.println("""
                 Ingrese el genero del juego de mesa:\s
                 1 - Puzzle.
                 2 - Cartas.
@@ -66,23 +133,35 @@ public class JuegoMesa extends itemVenta{
                 4 - Fiesta.
                 5 - Rol.
                 """);
-        int gen = scanner.nextInt();
-        GenerosJM genderJM = null;
-        switch (gen) {
-            case 1 -> genderJM = GenerosJM.PUZZLE;
-            case 2 -> genderJM = GenerosJM.CARTAS;
-            case 3 -> genderJM = GenerosJM.DADOS;
-            case 4 -> genderJM = GenerosJM.FIESTA;
-            case 5 -> genderJM = GenerosJM.ROL;
-            default -> System.out.println("Opcion no valida. Reintente");
-        }
-        JuegoMesa juego=new JuegoMesa(numero,nombre,clasEdad,genderJM);
-        
+            int gen = scanner.nextInt();
+            GenerosJM genderJM = null;
+            switch (gen) {
+                case 1 -> genderJM = GenerosJM.PUZZLE;
+                case 2 -> genderJM = GenerosJM.CARTAS;
+                case 3 -> genderJM = GenerosJM.DADOS;
+                case 4 -> genderJM = GenerosJM.FIESTA;
+                case 5 -> genderJM = GenerosJM.ROL;
+                default -> System.out.println("Opcion no valida. Reintente");
+            }
+            //endregion
+
+            JuegoMesa juego = new JuegoMesa(numero,nombre,clasEdad,genderJM);
+
+            juegosDeMesa=LeerArchivo();
+
+            if(juegosDeMesa!=null){
+                juegosDeMesa.agregarElemento(juego);
+            }
+            EscribirArchivo(juegosDeMesa);
+
+            System.out.println("Desea cargar otro juego? s/n");
+            control = scanner.next();
+
+        }while(control.equalsIgnoreCase("S"));
     }
 
     @Override
     public void MostrarListado() {
-        //Mostrar el listado de juegos de mesa
 
     }
 
@@ -102,10 +181,12 @@ public class JuegoMesa extends itemVenta{
 
     }
 
+    //region toString
     @Override
     public String toString() {
         return  "Juego de mesa (" + super.toString() +
                 ", Genero= " + this.genero +
                 ")";
     }
+    //endregion
 }

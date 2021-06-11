@@ -50,6 +50,21 @@ public class Libro extends itemVenta{
     //endregion
 
     @Override
+    public void CrearArchivo() {
+
+    }
+
+    @Override
+    public Seccion LeerArchivo() {
+        return null;
+    }
+
+    @Override
+    public void EscribirArchivo(Seccion datoDeSeccion) {
+
+    }
+
+    @Override
     public void CargarItems() {
         //Aca se carga un item al listado
         Scanner scanner = new Scanner (System.in);
@@ -128,8 +143,10 @@ public class Libro extends itemVenta{
 
     }
 
+    //region toString
     @Override
     public String toString() {
         return "Libro (" + super.toString() + ", Genero= " + this.Genero + ", Autor=" + this.Autor + ", Editorial=" + this.Editorial + ")";
     }
+    //endregion
 }

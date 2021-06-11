@@ -20,6 +20,7 @@ public class Disco extends itemVenta{
         super(precio, nombre, clasificacion);
     }
 
+
     public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, ArrayList<String> canciones, GenerosD genero, LocalDate fechaLanzamiento) {
         super(precio, nombre, clasificacion);
         Solo_Banda = solo_Banda;
@@ -42,6 +43,21 @@ public class Disco extends itemVenta{
     public LocalDate getFechaLanzamiento() { return FechaLanzamiento; }
     public void setFechaLanzamiento(LocalDate fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
     //endregion
+
+    @Override
+    public void CrearArchivo() {
+
+    }
+
+    @Override
+    public Seccion LeerArchivo() {
+        return null;
+    }
+
+    @Override
+    public void EscribirArchivo(Seccion datoDeSeccion) {
+
+    }
 
     @Override
     public void CargarItems() {
@@ -122,10 +138,12 @@ public class Disco extends itemVenta{
 
     }
 
+    //region toString
     @Override
     public String toString() {
         return "Disco (" + super.toString() + ", Solista / Banda = " +
                 this.Solo_Banda + ", Canciones = " + this.Canciones + ", Genero = " +
                 this.Genero + ", Fecha de lanzamiento = " + this.FechaLanzamiento + ")";
     }
+    //endregion
 }

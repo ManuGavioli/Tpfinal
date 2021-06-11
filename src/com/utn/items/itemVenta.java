@@ -2,7 +2,6 @@ package com.utn.items;
 
 import com.utn.items.enums.ClasificacionEdad;
 import org.w3c.dom.ls.LSOutput;
-
 import java.util.UUID;
 
 public abstract class itemVenta {
@@ -25,6 +24,12 @@ public abstract class itemVenta {
         this.clasificacion = clasificacion;
     }
     //endregion
+
+    public abstract void CrearArchivo();
+
+    public abstract Seccion LeerArchivo();
+
+    public abstract void EscribirArchivo(Seccion datoDeSeccion);
 
     public abstract void CargarItems();
 

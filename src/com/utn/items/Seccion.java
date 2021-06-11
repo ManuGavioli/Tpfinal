@@ -7,7 +7,7 @@ public class Seccion<T> {
     private List<T> elementos = new ArrayList<>();
     private int tope;
 
-    private Seccion(int tope){
+    public Seccion(int tope){
         this.tope = tope;
     }
 
