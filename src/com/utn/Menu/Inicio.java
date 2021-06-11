@@ -43,7 +43,7 @@ public class Inicio implements Menu {
                     control = "s";
                 }
 
-            if(caso!=0) {
+            if(caso==1 || caso==2) {
                 do{
 
                     try{
@@ -73,7 +73,7 @@ public class Inicio implements Menu {
 
             }
         }else{
-            throw new NumException("El valor ingresado es incorrecto...");
+            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
         }
     }
 
