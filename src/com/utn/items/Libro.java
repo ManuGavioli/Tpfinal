@@ -1,8 +1,11 @@
 package com.utn.items;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosL;
 
+import java.io.*;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -51,17 +54,60 @@ public class Libro extends itemVenta{
 
     @Override
     public void CrearArchivo() {
-
+        try{
+            BufferedWriter fSalida = new BufferedWriter(new FileWriter(new File("libros.json")));
+            fSalida.close();
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
     public Seccion LeerArchivo() {
-        return null;
+        Seccion<JuegoMesa> aux = new Seccion<>(50);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        BufferedReader reader = null;
+
+        try{
+            reader = new BufferedReader(new FileReader(new File("libros.json")));
+            aux = gson.fromJson(reader,Seccion.class);
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (reader != null){
+                    reader.close();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        return aux;
     }
 
     @Override
     public void EscribirArchivo(Seccion datoDeSeccion) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+        BufferedWriter guardar = null;
+
+        try{
+            guardar = new BufferedWriter(new FileWriter(new File("libros.json")));
+
+            gson.toJson(datoDeSeccion, Seccion.class, guardar);
+        }catch (IOException e){
+            e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(guardar != null){
+                try {
+                    guardar.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -122,6 +168,8 @@ public class Libro extends itemVenta{
         }
         Libro libro = new Libro(precio,nombre,clasEdad,generL,autor,editorial);
     }
+
+
 
     @Override
     public void MostrarListado() {

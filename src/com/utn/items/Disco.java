@@ -1,8 +1,11 @@
 package com.utn.items;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosD;
 
+import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -46,17 +49,64 @@ public class Disco extends itemVenta{
 
     @Override
     public void CrearArchivo() {
+        try{
+            BufferedWriter fSalida = new BufferedWriter(new FileWriter(new File("discos.json")));
+            fSalida.close();
 
+        } catch(IOException e) {
+            System.out.println(e.getMessage());
+
+        }
     }
 
     @Override
     public Seccion LeerArchivo() {
-        return null;
+        Seccion<JuegoMesa> aux = new Seccion<>(50);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        BufferedReader reader = null;
+
+        try{
+            reader = new BufferedReader(new FileReader(new File("discos.json")));
+            aux = gson.fromJson(reader,Seccion.class);
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (reader != null){
+                    reader.close();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        return aux;
     }
+
+
 
     @Override
     public void EscribirArchivo(Seccion datoDeSeccion) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+        BufferedWriter guardar = null;
+
+        try{
+            guardar = new BufferedWriter(new FileWriter(new File("discos.json")));
+
+            gson.toJson(datoDeSeccion, Seccion.class, guardar);
+        }catch (IOException e){
+            e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(guardar != null){
+                try {
+                    guardar.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override

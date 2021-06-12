@@ -49,7 +49,25 @@ public class JuegoMesa extends itemVenta{
     @Override
     public Seccion LeerArchivo() {
         Seccion<JuegoMesa> aux = new Seccion<>(50);
-        try {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        BufferedReader reader = null;
+
+        try{
+            reader = new BufferedReader(new FileReader(new File("juegosDeMesa.json")));
+            aux = gson.fromJson(reader,Seccion.class);
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (reader != null){
+                    reader.close();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        /** try {
             FileInputStream fileInputStream = new FileInputStream("juegosDeMesa.json");
 
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
@@ -66,13 +84,37 @@ public class JuegoMesa extends itemVenta{
         } catch (ClassNotFoundException e) {
             System.out.println("No se encontro la clase...");
         }
-
+*/
         return aux;
     }
 
     @Override
     public void EscribirArchivo(Seccion datoDeSeccion) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        BufferedWriter guardar = null;
+
         try{
+            guardar = new BufferedWriter(new FileWriter(new File("juegosDeMesa.json")));
+
+            gson.toJson(datoDeSeccion, Seccion.class, guardar);
+        }catch (IOException e){
+            e.printStackTrace();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(guardar != null){
+                try {
+                    guardar.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+
+        /**try{
             FileOutputStream fileOutputStream = new FileOutputStream("juegosDeMesa.json");
             ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutputStream);
 
@@ -88,7 +130,7 @@ public class JuegoMesa extends itemVenta{
         } catch (IOException e) {
             e.printStackTrace();
 
-        }
+         */
     }
 
     @Override
