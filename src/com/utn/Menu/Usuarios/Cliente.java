@@ -16,18 +16,18 @@ public class Cliente implements Menu , Serializable {
     private String mail;
     private double cartera = 0;
 
+    @Serial
     private static final long serialVersionUID = 13221L;
 
 
     ///region Constructores
     public Cliente() { }
 
-    public Cliente(int dni, String nombreUsuario, String password, String mail, double cartera) {
+    public Cliente(int dni, String nombreUsuario, String password, String mail) {
         this.dni = dni;
         this.nombreUsuario = nombreUsuario;
         this.password = password;
         this.mail = mail;
-        this.cartera = cartera;
     }
     ///endregion
 
@@ -54,8 +54,9 @@ public class Cliente implements Menu , Serializable {
         cl.Menu();
     }
 
+
     ///Carga un mapa en el archivo
-    private static  void CargarArchivo(HashMap<Integer,Cliente> map){
+    private static  void CargarMapaArchivo(HashMap<Integer,Cliente> map){
         try{
 
          FileOutputStream fileOutputStream = new FileOutputStream("Clientes.json");
@@ -84,20 +85,6 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    /// POR AHORA SOLO LEE
-    private static void LeerArchivo(){
-        try{
-            FileInputStream fileInputStream =new FileInputStream("Clientes.json");
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-            HashMap<Integer,Cliente> map = (HashMap<Integer, Cliente>) objectInputStream.readObject();
-
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
     @Override
     public void Menu() {
         String control ="s";
@@ -109,7 +96,7 @@ public class Cliente implements Menu , Serializable {
 
             try {
                 System.out.println("Ingrese una de las siguientes opciones: ");
-                System.out.println("1.Iniciar sesion 2.Registrarse 0.Exit");
+                System.out.println("1.Iniciar sesion 2.Registrarse 0.Go Back");
 
                  caso = scanner.nextInt();
                  Opcion(caso);
@@ -133,11 +120,16 @@ public class Cliente implements Menu , Serializable {
                 }while(!control.equalsIgnoreCase("S") && !control.equalsIgnoreCase("N"));
             }
 
-            if(control.equalsIgnoreCase("N")){ System.out.println("Gracias por su atencion!!!"); }
-
         }while(control.equalsIgnoreCase("S"));
     }
 
+
+    ///todo SUBMENU
+
+    ///todo VER O MODIFICAR PERFIL
+    ///todo DEPOSITAR EN CARTERA Y MOSTRAR CARTERA
+
+    ///todo  posible historial de compras
 
     public static void IniciarSesion(){
 
@@ -163,17 +155,25 @@ public class Cliente implements Menu , Serializable {
 
                   if(name.equalsIgnoreCase(client.getNombreUsuario())){
 
+                      ///CREAR LOOP DE CONTRASEÑA INCORRECTA SI EXISTE EL USUARIO PERO NO ES LA CONTRASEÑA
+
                       if(password.equalsIgnoreCase(client.getPassword())){
 
                             System.out.println("Ingreso correctamente: ");
                             System.out.println("ACA VA EL SUBMENU");
 
-                            flag=true;
+
+                      }else{
+                          System.out.println("La contraseña es incorrecta...");
                       }
+                      flag=true;
                   }
               }
 
-              if(!flag){ System.out.println("El usuario o la contraseña son incorrectos..."); }
+              if(!flag){ System.out.println("El usuario no se encuentra registrado"); }
+
+            } catch (FileNotFoundException e){
+                System.out.println("El archivo no existe...");
 
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
@@ -184,6 +184,71 @@ public class Cliente implements Menu , Serializable {
 
     public static void Registrarse(){
 
+        Scanner scanner = new Scanner(System.in);
+        boolean flag=false;
+
+        System.out.println("Ingrese nombre de usuario: ");
+        String name = scanner.next();
+        System.out.println("Ingrese la contraseña: ");
+        String password = scanner.next();
+        System.out.println("Ingrese el DNI: ");
+        int dni = scanner.nextInt();
+        System.out.println("Ingrese la direccion de correo electronico: ");
+        String mail = scanner.next();
+
+        Cliente ingresado = new Cliente(dni,name,password,mail);
+
+        try{
+            FileInputStream fileInputStream =new FileInputStream("Clientes.json");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+            HashMap<Integer,Cliente> map = (HashMap<Integer,Cliente>) objectInputStream.readObject();
+
+            Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
+            while(mapIterator.hasNext() && !flag){
+
+                Cliente client = mapIterator.next().getValue();
+
+                if(name.equalsIgnoreCase(client.getNombreUsuario())){
+                    System.out.println("-Ese nombre de usuario ya se encuentra registrado-");
+                    flag=true;
+
+                }
+                if( dni == client.getDni() && !flag){
+                    System.out.println("-Ese Dni ya se encuentra registrado-");
+                    flag=true;
+
+                }
+
+                if(mail.equalsIgnoreCase(client.getMail()) && !flag ){
+                    System.out.println("-El mail ya se encuentra registrado-");
+                    flag=true;
+
+                }
+
+                if(flag){
+                    System.out.println("Intente iniciando sesion");
+                }
+            }
+
+            if(!flag){
+                map.put(dni,ingresado);
+                CargarMapaArchivo(map);
+            }
+
+        } catch (FileNotFoundException e){
+            System.out.println("Creando archivo.... ");
+            HashMap<Integer,Cliente> map = new HashMap<>();
+
+            map.put(dni,ingresado);
+            CargarMapaArchivo(map);
+
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+
+        }
+
     }
 
     public static void Opcion(int caso) throws NumException{
@@ -193,7 +258,7 @@ public class Cliente implements Menu , Serializable {
             switch (caso) {
 
                 case 1 -> Cliente.IniciarSesion();
-                case 2 -> System.out.println("ACA REGISTRARSE");
+                case 2 -> Cliente.Registrarse();
                 default -> System.out.println("Gracias por su atencion!!!");
 
             }

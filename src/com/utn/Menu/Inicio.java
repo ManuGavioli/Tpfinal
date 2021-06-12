@@ -85,7 +85,7 @@ public class Inicio implements Menu {
         String control;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Desea relizar otra operacion??");
+        System.out.println("Desea ingresar nuevamente ??");
         System.out.println("S/N");
         control = scanner.next();
 
