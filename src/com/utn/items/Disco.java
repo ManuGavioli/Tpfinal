@@ -19,10 +19,10 @@ public class Disco extends itemVenta{
     private LocalDate FechaLanzamiento;
 
     //region Constructores
+
     public Disco(float precio,String nombre, ClasificacionEdad clasificacion) {
         super(precio, nombre, clasificacion);
     }
-
 
     public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, ArrayList<String> canciones, GenerosD genero, LocalDate fechaLanzamiento) {
         super(precio, nombre, clasificacion);
@@ -30,6 +30,10 @@ public class Disco extends itemVenta{
         Canciones= new ArrayList<String>();
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
+    }
+
+    public Disco(){
+
     }
     //endregion
 
@@ -82,8 +86,6 @@ public class Disco extends itemVenta{
         return aux;
     }
 
-
-
     @Override
     public void EscribirArchivo(Seccion datoDeSeccion) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -112,59 +114,81 @@ public class Disco extends itemVenta{
     @Override
     public void CargarItems() {
         //Se carga un nuevo item al programa
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Ingrese el nombre del disco: ");
-        String nombre = scanner.nextLine();
+        String control;
+        do {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Ingrese el nombre del disco: ");
+            String nombre = scanner.nextLine();
 
-        System.out.println("Ingrese el precio del producto: ");
-        float precio = scanner.nextFloat();
+            System.out.println("Ingrese el precio del producto: ");
+            float precio = scanner.nextFloat();
 
-        System.out.println("Ingrese el nombre de la banda o del solista: ");
-        String soloBanda = scanner.nextLine();
+            System.out.println("Ingrese el nombre de la banda o del solista: ");
+            String soloBanda = scanner.nextLine();
 
-        //
-        //Aca iria Añadir canciones
-        //
+            //
+            //Aca iria Añadir canciones
+            //
 
-        System.out.println("Ingrese la clasificacion de edad del disco: \s" +
-                "1 - Niños." +
-                "2 - Adolecentes." +
-                "3 - Adultos.");
-        int edad = scanner.nextInt();
-        ClasificacionEdad clasEdad = null;
-        switch (edad) {
-            case 1 -> clasEdad = ClasificacionEdad.NINIOS;
-            case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
-            case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
-            default -> System.out.println("Opcion no valida. Reintente");
-        }
+            //region ClasificacionPorEdad
+            int Edad;
+            ClasificacionEdad clasEdad = null;
+            do{
+                System.out.println("""
+                Ingrese la clasificacion de edad del disco:\s
+                1 - Niños.
+                2 - Adolecentes.
+                3 - Adultos.
+                """);
+                    Edad = scanner.nextInt();
+                    switch (Edad) {
+                        case 1 -> clasEdad = ClasificacionEdad.NINIOS;
+                        case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
+                        case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
+                        default -> System.out.println("Opcion no valida. Reintente");
+                    }
+                }while(Edad != 1 && Edad != 2 && Edad != 3);
+            //endregion
 
-        System.out.println("Ingrese el genero del disco: \s" +
-                "1 - Rock." +
-                "2 - Pop." +
-                "3 - Jazz." +
-                "4 - Electronica." +
-                "5 - Clasica." +
-                "6 - Blues." +
-                "7 - R&B." +
-                "8 - Hip Hop.");
-        int gen = scanner.nextInt();
-        GenerosD genderD = null;
-        switch (gen){
-            case 1 -> genderD = GenerosD.ROCK;
-            case 2 -> genderD = GenerosD.POP;
-            case 3 -> genderD = GenerosD.JAZZ;
-            case 4 -> genderD = GenerosD.ELECTRONICA;
-            case 5 -> genderD = GenerosD.CLASICA;
-            case 6 -> genderD = GenerosD.BLUES;
-            case 7 -> genderD = GenerosD.RandB;
-            case 8 -> genderD = GenerosD.HIP_HOP;
-            default -> System.out.println("Opcion no valida. Reintente");
-        }
+            //region ClasificacionPorGenero
+            GenerosD genderD = null;
+            int gen;
+            do {
+                System.out.println("""
+                        Ingrese el genero del disco: \s
+                        1 - Rock.
+                        2 - Pop.
+                        3 - Jazz.
+                        4 - Electronica.
+                        5 - Clasica.
+                        6 - Blues.
+                        7 - R&B.
+                        8 - Hip Hop.""");
+                gen = scanner.nextInt();
+                switch (gen){
+                    case 1 -> genderD = GenerosD.ROCK;
+                    case 2 -> genderD = GenerosD.POP;
+                    case 3 -> genderD = GenerosD.JAZZ;
+                    case 4 -> genderD = GenerosD.ELECTRONICA;
+                    case 5 -> genderD = GenerosD.CLASICA;
+                    case 6 -> genderD = GenerosD.BLUES;
+                    case 7 -> genderD = GenerosD.RandB;
+                    case 8 -> genderD = GenerosD.HIP_HOP;
+                    default -> System.out.println("Opcion no valida. Reintente");
+                }
+            }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8);
+            //endregion
 
-        //
-        //Aca va el local Date
-        //
+            //
+            //Aca va el local Date
+            //
+
+            //Disco disco = new Disco(CON LOS PARAMETROS ACA PRIMERO HACER LOCALDATE Y AÑADIR CANCIONES);
+
+            System.out.println("Desea cargar otro libro? s/n");
+            control = scanner.next();
+
+        }while (control.equalsIgnoreCase("S"));
 
     }
 

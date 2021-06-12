@@ -37,7 +37,7 @@ public class JuegoMesa extends itemVenta{
     @Override
     public void CrearArchivo() {
         try{
-            BufferedWriter fSalida = new BufferedWriter(new FileWriter(new File("juegosDeMesa.json")));
+            BufferedWriter fSalida = new BufferedWriter(new FileWriter("juegosDeMesa.json"));
             fSalida.close();
 
         } catch(IOException e) {
@@ -55,9 +55,13 @@ public class JuegoMesa extends itemVenta{
         try{
             reader = new BufferedReader(new FileReader(new File("juegosDeMesa.json")));
             aux = gson.fromJson(reader,Seccion.class);
-        }catch (IOException e){
+        } catch (FileNotFoundException e){
+            System.out.println("No se encontro el archivo correspondiente");
+            CrearArchivo();
+            System.out.println("Creando el archivo");
+        } catch (IOException e){
             e.printStackTrace();
-        }finally {
+        } finally {
             try{
                 if (reader != null){
                     reader.close();
@@ -95,14 +99,12 @@ public class JuegoMesa extends itemVenta{
         BufferedWriter guardar = null;
 
         try{
-            guardar = new BufferedWriter(new FileWriter(new File("juegosDeMesa.json")));
+            guardar = new BufferedWriter(new FileWriter("juegosDeMesa.json"));
 
             gson.toJson(datoDeSeccion, Seccion.class, guardar);
-        }catch (IOException e){
+        } catch (Exception e){
             e.printStackTrace();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
+        } finally {
             if(guardar != null){
                 try {
                     guardar.close();
@@ -136,11 +138,10 @@ public class JuegoMesa extends itemVenta{
     @Override
     public void CargarItems() {
         //Pide al staff que cargue un item
-        String control = null;
+        String control;
 
         do{
             Scanner scanner= new Scanner(System.in);
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
 
             System.out.println("Ingrese el nombre del juego de mesa: ");
@@ -150,24 +151,30 @@ public class JuegoMesa extends itemVenta{
             float numero = scanner.nextFloat();
 
             //region ClasificacionPorEdad
-            System.out.println("""
+            int Edad;
+            ClasificacionEdad clasEdad = null;
+            do{
+                System.out.println("""
                 Ingrese la clasificacion de edad del juego de mesa:\s
                 1 - Niños.
                 2 - Adolecentes.
                 3 - Adultos.
                 """);
-            int Edad = scanner.nextInt();
-            ClasificacionEdad clasEdad = null;
-            switch (Edad) {
-                case 1 -> clasEdad = ClasificacionEdad.NINIOS;
-                case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
-                case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
-                default -> System.out.println("Opcion no valida. Reintente");
-            }
+                Edad = scanner.nextInt();
+                switch (Edad) {
+                    case 1 -> clasEdad = ClasificacionEdad.NINIOS;
+                    case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
+                    case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
+                    default -> System.out.println("Opcion no valida. Reintente");
+                }
+            }while(Edad != 1 && Edad != 2 && Edad != 3);
             //endregion
 
             //region ClasificacionPorGenero
-            System.out.println("""
+            int gen;
+            GenerosJM genderJM = null;
+            do {
+                System.out.println("""
                 Ingrese el genero del juego de mesa:\s
                 1 - Puzzle.
                 2 - Cartas.
@@ -175,26 +182,22 @@ public class JuegoMesa extends itemVenta{
                 4 - Fiesta.
                 5 - Rol.
                 """);
-            int gen = scanner.nextInt();
-            GenerosJM genderJM = null;
-            switch (gen) {
-                case 1 -> genderJM = GenerosJM.PUZZLE;
-                case 2 -> genderJM = GenerosJM.CARTAS;
-                case 3 -> genderJM = GenerosJM.DADOS;
-                case 4 -> genderJM = GenerosJM.FIESTA;
-                case 5 -> genderJM = GenerosJM.ROL;
-                default -> System.out.println("Opcion no valida. Reintente");
-            }
+                gen = scanner.nextInt();
+                switch (gen) {
+                    case 1 -> genderJM = GenerosJM.PUZZLE;
+                    case 2 -> genderJM = GenerosJM.CARTAS;
+                    case 3 -> genderJM = GenerosJM.DADOS;
+                    case 4 -> genderJM = GenerosJM.FIESTA;
+                    case 5 -> genderJM = GenerosJM.ROL;
+                    default -> System.out.println("Opcion no valida. Reintente");
+                }
+            }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5);
+
             //endregion
 
             JuegoMesa juego = new JuegoMesa(numero,nombre,clasEdad,genderJM);
 
-            juegosDeMesa=LeerArchivo();
-
-            if(juegosDeMesa!=null){
-                juegosDeMesa.agregarElemento(juego);
-            }
-            EscribirArchivo(juegosDeMesa);
+            // HACER BIEN GENERICIDAD CON ARCHIVOS EN ESTA PARTE
 
             System.out.println("Desea cargar otro juego? s/n");
             control = scanner.next();
@@ -209,7 +212,6 @@ public class JuegoMesa extends itemVenta{
 
     @Override
     public void BuscarItems() {
-
 
     }
 

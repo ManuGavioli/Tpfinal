@@ -16,13 +16,14 @@ public class Libro extends itemVenta{
 
     //region Constructor
 
-    public Libro(float precio, String nombre,
-                 ClasificacionEdad clasificacion, GenerosL genero,
-                 String autor, String editorial) {
+    public Libro(float precio, String nombre, ClasificacionEdad clasificacion, GenerosL genero, String autor, String editorial) {
         super(precio, nombre, clasificacion);
         Genero = genero;
         Autor = autor;
         Editorial = editorial;
+    }
+
+    public Libro(){
     }
 
     //endregion
@@ -113,62 +114,82 @@ public class Libro extends itemVenta{
     @Override
     public void CargarItems() {
         //Aca se carga un item al listado
-        Scanner scanner = new Scanner (System.in);
+        String control;
+        do {
+            Scanner scanner = new Scanner (System.in);
 
-        System.out.println("Ingrese El nombre del libro: ");
-        String nombre = scanner.nextLine();
+            System.out.println("Ingrese El nombre del libro: ");
+            String nombre = scanner.nextLine();
 
-        System.out.println("Ingrese el nombre de la editorial: ");
-        String editorial = scanner.nextLine();
+            System.out.println("Ingrese el nombre de la editorial: ");
+            String editorial = scanner.nextLine();
 
-        System.out.println("Ingrese el nombre del/la autor/autora: ");
-        String autor = scanner.nextLine();
+            System.out.println("Ingrese el nombre del/la autor/autora: ");
+            String autor = scanner.nextLine();
 
-        System.out.println("Ingrese el precio del producto: ");
-        float precio = scanner.nextFloat();
+            System.out.println("Ingrese el precio del producto: ");
+            float precio = scanner.nextFloat();
 
-        System.out.println("""
-                Ingrese la clasificacion de edad del juego de mesa:\s
-                1 - Niños.
-                2 - Adolecentes.
-                3 - Adultos.
-                """);
-        int Edad = scanner.nextInt();
-        ClasificacionEdad clasEdad = null;
-        switch (Edad) {
-            case 1 -> clasEdad = ClasificacionEdad.NINIOS;
-            case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
-            case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
-            default -> System.out.println("Opcion no valida. Reintente");
-        }
+            //region ClasificacionPorEdad
+            int Edad;
+            ClasificacionEdad clasEdad = null;
+            do{
+                System.out.println("""
+                    Ingrese la clasificacion de edad del libro:\s
+                    1 - Niños.
+                    2 - Adolecentes.
+                    3 - Adultos.
+                    """);
+                Edad = scanner.nextInt();
+                switch (Edad) {
+                    case 1 -> clasEdad = ClasificacionEdad.NINIOS;
+                    case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
+                    case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
+                    default -> System.out.println("Opcion no valida. Reintente");
+                }
+            }while(Edad != 1 && Edad != 2 && Edad != 3);
+            //endregion
 
-        System.out.println("Ingrese el genero del libro: \s" +
-                "1 - Accion." +
-                "2 - Aventura." +
-                "3 - Romance." +
-                "4 - Drama." +
-                "5 - Poesia." +
-                "6 - Medieval." +
-                "7 - Ciencia ficcion." +
-                "8 - Fantasia." +
-                "9 - Policial");
-        int gen = scanner.nextInt();
-        GenerosL generL = null;
-        switch (gen){
-            case 1 -> generL = GenerosL.ACCION;
-            case 2 -> generL = GenerosL.AVENTURA;
-            case 3 -> generL = GenerosL.ROMANCE;
-            case 4 -> generL = GenerosL.DRAMA;
-            case 5 -> generL = GenerosL.POESIA;
-            case 6 -> generL = GenerosL.MEDIEVAL;
-            case 7 -> generL = GenerosL.CIENCIA_FICCION;
-            case 8 -> generL = GenerosL.FANTASIA;
-            case 9 -> generL = GenerosL.POLICIAL;
-            default -> System.out.println("Opcion no valida. Reintente");
-        }
-        Libro libro = new Libro(precio,nombre,clasEdad,generL,autor,editorial);
+            //region ClasificacionPorGenero
+            GenerosL generL = null;
+            int gen;
+            do {
+                System.out.println("""
+                        Ingrese el genero del libro: \s
+                        1 - Accion.
+                        2 - Aventura.
+                        3 - Romance.
+                        4 - Drama.
+                        5 - Poesia.
+                        6 - Medieval.
+                        7 - Ciencia ficcion.
+                        8 - Fantasia.
+                        9 - Policial
+                        """);
+                gen = scanner.nextInt();
+                switch (gen){
+                    case 1 -> generL = GenerosL.ACCION;
+                    case 2 -> generL = GenerosL.AVENTURA;
+                    case 3 -> generL = GenerosL.ROMANCE;
+                    case 4 -> generL = GenerosL.DRAMA;
+                    case 5 -> generL = GenerosL.POESIA;
+                    case 6 -> generL = GenerosL.MEDIEVAL;
+                    case 7 -> generL = GenerosL.CIENCIA_FICCION;
+                    case 8 -> generL = GenerosL.FANTASIA;
+                    case 9 -> generL = GenerosL.POLICIAL;
+                    default -> System.out.println("Opcion no valida. Reintente");
+                }
+
+            }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8 && gen != 9);
+            //endregion
+
+            Libro libro = new Libro(precio,nombre,clasEdad,generL,autor,editorial);
+
+            System.out.println("Desea cargar otro libro? s/n");
+            control = scanner.next();
+
+        }while(control.equalsIgnoreCase("S"));
     }
-
 
 
     @Override
