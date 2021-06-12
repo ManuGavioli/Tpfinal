@@ -11,6 +11,26 @@ public class Seccion<T> {
         this.tope = tope;
     }
 
+    //region Getters y Setters
+    public List<T> getElementos() {
+        return elementos;
+    }
+
+    public void setElementos(List<T> elementos) {
+        this.elementos = elementos;
+    }
+
+    public int getTope() {
+        return tope;
+    }
+
+    public void setTope(int tope) {
+        this.tope = tope;
+    }
+    //endregion
+
+    ///todo Probar sacando tope
+
     public boolean agregarElemento(T t) {
         if (tope < elementos.size()) {
             elementos.add(t);
@@ -18,4 +38,6 @@ public class Seccion<T> {
         }
         return false;
     }
+
+
 }

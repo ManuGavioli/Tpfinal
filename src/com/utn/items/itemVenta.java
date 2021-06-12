@@ -2,6 +2,8 @@ package com.utn.items;
 
 import com.utn.items.enums.ClasificacionEdad;
 import org.w3c.dom.ls.LSOutput;
+
+import java.lang.reflect.Type;
 import java.util.UUID;
 
 public abstract class itemVenta {

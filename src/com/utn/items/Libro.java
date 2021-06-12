@@ -2,12 +2,15 @@ package com.utn.items;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosL;
 
 import java.io.*;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class Libro extends itemVenta{
     private GenerosL Genero;
@@ -67,11 +70,12 @@ public class Libro extends itemVenta{
     public Seccion LeerArchivo() {
         Seccion<JuegoMesa> aux = new Seccion<>(50);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Type seccion = new TypeToken<Seccion<Libro>>() {}.getType();
         BufferedReader reader = null;
 
         try{
             reader = new BufferedReader(new FileReader(new File("libros.json")));
-            aux = gson.fromJson(reader,Seccion.class);
+            aux = gson.fromJson(reader,seccion);
         }catch (IOException e){
             e.printStackTrace();
         }finally {
@@ -89,13 +93,13 @@ public class Libro extends itemVenta{
     @Override
     public void EscribirArchivo(Seccion datoDeSeccion) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+        Type seccion = new TypeToken<Seccion<Libro>>(){}.getType();
         BufferedWriter guardar = null;
 
         try{
             guardar = new BufferedWriter(new FileWriter(new File("libros.json")));
 
-            gson.toJson(datoDeSeccion, Seccion.class, guardar);
+            gson.toJson(datoDeSeccion, seccion, guardar);
         }catch (IOException e){
             e.printStackTrace();
         }catch (Exception e){
@@ -194,12 +198,23 @@ public class Libro extends itemVenta{
 
     @Override
     public void MostrarListado() {
+        List <Libro> libros = LeerArchivo().getElementos();
 
+        Iterator <Libro> iterator = libros.iterator();
+
+        while (iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
     }
 
     @Override
     public void BuscarItems() {
+        List <Libro> libros = LeerArchivo().getElementos();
+        Iterator <Libro> iterator = libros.iterator();
 
+        while (iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
     }
 
     @Override
