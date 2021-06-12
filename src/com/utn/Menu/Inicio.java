@@ -1,5 +1,7 @@
 package com.utn.Menu;
 
+import com.utn.Menu.Usuarios.Cliente;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -67,7 +69,7 @@ public class Inicio implements Menu {
         if(caso==1 || caso==2 || caso==0){
             switch (caso) {
 
-                case 1 -> System.out.println("ACA EL MENU DE CLIENTE");
+                case 1 -> Cliente.MenuInic();
                 case 2 -> System.out.println("ACA EL MENU DE STAFF");
                 default -> System.out.println("Gracias por su atencion!!!");
 
