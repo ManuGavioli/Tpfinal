@@ -69,7 +69,7 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    private static void MostrarArchivo(){
+    public static void MostrarArchivo(){
         try{
             FileInputStream fileInputStream =new FileInputStream("Clientes.json");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
@@ -140,7 +140,7 @@ public class Cliente implements Menu , Serializable {
     }
 
     ///region Funciones de inicio/registro
-    public static void IniciarSesion(){
+    private static void IniciarSesion(){
 
             Scanner scanner = new Scanner(System.in);
             boolean flag=false;
@@ -191,7 +191,7 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    public static void Registrarse(){
+    private static void Registrarse(){
 
         Scanner scanner = new Scanner(System.in);
         boolean flag=false;
