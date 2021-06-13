@@ -2,14 +2,14 @@ package com.utn.items;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosD;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 public class Disco extends itemVenta{
 
@@ -65,13 +65,14 @@ public class Disco extends itemVenta{
 
     @Override
     public Seccion LeerArchivo() {
-        Seccion<JuegoMesa> aux = new Seccion<>(50);
+        Seccion<Disco> aux = new Seccion<>(50);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Type seccion = new TypeToken<Seccion<Disco>>() {}.getType();
         BufferedReader reader = null;
 
         try{
             reader = new BufferedReader(new FileReader(new File("discos.json")));
-            aux = gson.fromJson(reader,Seccion.class);
+            aux = gson.fromJson(reader,seccion);
         }catch (IOException e){
             e.printStackTrace();
         }finally {
@@ -89,13 +90,13 @@ public class Disco extends itemVenta{
     @Override
     public void EscribirArchivo(Seccion datoDeSeccion) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+        Type seccion = new TypeToken<Seccion<Disco>>(){}.getType();
         BufferedWriter guardar = null;
 
         try{
             guardar = new BufferedWriter(new FileWriter(new File("discos.json")));
 
-            gson.toJson(datoDeSeccion, Seccion.class, guardar);
+            gson.toJson(datoDeSeccion, seccion, guardar);
         }catch (IOException e){
             e.printStackTrace();
         }catch (Exception e){
@@ -194,22 +195,58 @@ public class Disco extends itemVenta{
 
     @Override
     public void MostrarListado() {
+        List<Disco> discos = LeerArchivo().getElementos();
 
+        Iterator<Disco> iterator = discos.iterator();
+
+        while (iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
     }
 
     @Override
     public void BuscarItems() {
+        boolean flag = false;
+        List <Disco> discos = LeerArchivo().getElementos();
+        Iterator <Disco> iterator = discos.iterator();
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Ingrese el nombre del libro, autor o editorial de este: \s");
+        String dato = scanner.nextLine();
+
+        while (iterator.hasNext()){
+            if(iterator.next().getNombre() == dato || iterator.next().getSolo_Banda() == dato){
+                System.out.println(iterator.next());
+            }
+        }
     }
 
     @Override
     public void Venta(UUID ID) {
+        Seccion<Disco> seccionD = LeerArchivo();
+        List<Disco> discos = seccionD.getElementos();
+
+        for (var disco : discos){
+            if (disco.getID() == ID){
+                setStock(-1);
+            }
+        }
+        seccionD.setElementos(discos);
+
 
     }
 
     @Override
     public void DarDeBaja(UUID ID) {
-
+        Seccion<Disco> seccionD = LeerArchivo();
+        List<Disco> discos = seccionD.getElementos();
+        List<Disco> aux = new ArrayList<Disco>();
+        for (var disco : discos){
+            if (disco.getID() != ID){
+                aux.add(disco);
+            }
+        }
+        seccionD.setElementos(aux);
     }
 
     //region toString

@@ -2,11 +2,12 @@ package com.utn.items;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosJM;
 import java.io.*;
-import java.util.Scanner;
-import java.util.UUID;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class JuegoMesa extends itemVenta{
 
@@ -51,18 +52,15 @@ public class JuegoMesa extends itemVenta{
     public Seccion LeerArchivo() {
         Seccion<JuegoMesa> aux = new Seccion<>(50);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Type seccion = new TypeToken<Seccion<JuegoMesa>>() {}.getType();
         BufferedReader reader = null;
 
         try{
             reader = new BufferedReader(new FileReader(new File("juegosDeMesa.json")));
-            aux = gson.fromJson(reader,Seccion.class);
-        } catch (FileNotFoundException e){
-            System.out.println("No se encontro el archivo correspondiente");
-            CrearArchivo();
-            System.out.println("Creando el archivo");
-        } catch (IOException e){
+            aux = gson.fromJson(reader,seccion);
+        }catch (IOException e){
             e.printStackTrace();
-        } finally {
+        }finally {
             try{
                 if (reader != null){
                     reader.close();
@@ -71,41 +69,24 @@ public class JuegoMesa extends itemVenta{
                 e.printStackTrace();
             }
         }
-
-        /** try {
-            FileInputStream fileInputStream = new FileInputStream("juegosDeMesa.json");
-
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-            aux = (Seccion<JuegoMesa>) objectInputStream.readObject();
-
-        } catch (FileNotFoundException e){
-            System.out.println("No se encontro el archivo...");
-            return null;
-
-        } catch(IOException e) {
-            e.printStackTrace();
-
-        } catch (ClassNotFoundException e) {
-            System.out.println("No se encontro la clase...");
-        }
-*/
         return aux;
     }
 
     @Override
     public void EscribirArchivo(Seccion datoDeSeccion) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+        Type seccion = new TypeToken<Seccion<JuegoMesa>>(){}.getType();
         BufferedWriter guardar = null;
 
         try{
-            guardar = new BufferedWriter(new FileWriter("juegosDeMesa.json"));
+            guardar = new BufferedWriter(new FileWriter(new File("juegosDeMesa.json")));
 
-            gson.toJson(datoDeSeccion, Seccion.class, guardar);
-        } catch (Exception e){
+            gson.toJson(datoDeSeccion, seccion, guardar);
+        }catch (IOException e){
             e.printStackTrace();
-        } finally {
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
             if(guardar != null){
                 try {
                     guardar.close();
@@ -114,26 +95,6 @@ public class JuegoMesa extends itemVenta{
                 }
             }
         }
-
-
-
-        /**try{
-            FileOutputStream fileOutputStream = new FileOutputStream("juegosDeMesa.json");
-            ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutputStream);
-
-            objectOutput.writeObject(datoDeSeccion);
-
-        } catch (FileNotFoundException e) {
-            System.out.println("No se encontro el archivo...");
-            System.out.println("Creando el archivo...");
-            CrearArchivo();
-            System.out.println("Archivo Creado!");
-            EscribirArchivo(datoDeSeccion);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-         */
     }
 
     @Override
@@ -208,22 +169,58 @@ public class JuegoMesa extends itemVenta{
 
     @Override
     public void MostrarListado() {
+        List<JuegoMesa> juegos = LeerArchivo().getElementos();
 
+        Iterator<JuegoMesa> iterator = juegos.iterator();
+
+        while (iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
     }
 
     @Override
     public void BuscarItems() {
+        boolean flag = false;
+        List <JuegoMesa> juegos = LeerArchivo().getElementos();
+        Iterator <JuegoMesa> iterator = juegos.iterator();
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Ingrese el nombre del libro, autor o editorial de este: \s");
+        String dato = scanner.nextLine();
+
+        while (iterator.hasNext()){
+            if(iterator.next().getNombre() == dato){
+                System.out.println(iterator.next());
+            }
+        }
     }
 
     @Override
     public void Venta(UUID ID) {
+        Seccion<JuegoMesa> seccionJM = LeerArchivo();
+        List<JuegoMesa> juegos = seccionJM.getElementos();
+
+        for (var juego : juegos){
+            if (juego.getID() == ID){
+                setStock(-1);
+            }
+        }
+        seccionJM.setElementos(juegos);
+
 
     }
 
     @Override
     public void DarDeBaja(UUID ID) {
-
+        Seccion<JuegoMesa> seccionJM = LeerArchivo();
+        List<JuegoMesa> juegos = seccionJM.getElementos();
+        List<JuegoMesa> aux = new ArrayList<JuegoMesa>();
+        for (var juego : juegos){
+            if (juego.getID() != ID){
+                aux.add(juego);
+            }
+        }
+        seccionJM.setElementos(aux);
     }
 
     //region toString
