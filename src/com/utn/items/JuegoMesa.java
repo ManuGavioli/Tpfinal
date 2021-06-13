@@ -6,6 +6,7 @@ import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosJM;
 import java.io.*;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class JuegoMesa extends itemVenta{
 
@@ -216,12 +217,12 @@ public class JuegoMesa extends itemVenta{
     }
 
     @Override
-    public void Venta() {
+    public void Venta(UUID ID) {
 
     }
 
     @Override
-    public void DarDeBaja() {
+    public void DarDeBaja(UUID ID) {
 
     }
 

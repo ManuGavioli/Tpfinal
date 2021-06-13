@@ -1,6 +1,7 @@
 package com.utn.items;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Seccion<T> {
@@ -39,5 +40,8 @@ public class Seccion<T> {
         return false;
     }
 
+    public Iterator < T > iterator(){
+        return elementos.iterator();
+    }
 
 }

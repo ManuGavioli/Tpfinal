@@ -1,9 +1,7 @@
 package com.utn.items;
 
 import com.utn.items.enums.ClasificacionEdad;
-import org.w3c.dom.ls.LSOutput;
 
-import java.lang.reflect.Type;
 import java.util.UUID;
 
 public abstract class itemVenta {
@@ -27,6 +25,50 @@ public abstract class itemVenta {
     }
     //endregion
 
+    //region Setters y getters
+
+    public UUID getID() {
+        return ID;
+    }
+
+    public void setID(UUID ID) {
+        this.ID = ID;
+    }
+
+    public float getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(float precio) {
+        this.precio = precio;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public ClasificacionEdad getClasificacion() {
+        return clasificacion;
+    }
+
+    public void setClasificacion(ClasificacionEdad clasificacion) {
+        this.clasificacion = clasificacion;
+    }
+
+    //endregion
+
     public abstract void CrearArchivo();
 
     public abstract Seccion LeerArchivo();
@@ -39,9 +81,9 @@ public abstract class itemVenta {
 
     public abstract void BuscarItems();
 
-    public abstract void Venta();
+    public abstract void Venta(UUID ID);
 
-    public abstract void DarDeBaja();
+    public abstract void DarDeBaja(UUID ID);
 
     @Override
     public String toString() {

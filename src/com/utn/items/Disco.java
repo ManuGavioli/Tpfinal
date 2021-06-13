@@ -203,12 +203,12 @@ public class Disco extends itemVenta{
     }
 
     @Override
-    public void Venta() {
+    public void Venta(UUID ID) {
 
     }
 
     @Override
-    public void DarDeBaja() {
+    public void DarDeBaja(UUID ID) {
 
     }
 

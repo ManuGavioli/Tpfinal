@@ -8,9 +8,7 @@ import com.utn.items.enums.GenerosL;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Libro extends itemVenta{
     private GenerosL Genero;
@@ -209,22 +207,47 @@ public class Libro extends itemVenta{
 
     @Override
     public void BuscarItems() {
+        boolean flag = false;
         List <Libro> libros = LeerArchivo().getElementos();
         Iterator <Libro> iterator = libros.iterator();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese el nombre del libro, autor o editorial de este: \s");
+        String dato = scanner.nextLine();
 
         while (iterator.hasNext()){
-            System.out.println(iterator.next());
+            if(iterator.next().getNombre() == dato || iterator.next().getAutor() == dato || iterator.next().getEditorial() == dato){
+                System.out.println(iterator.next());
+            }
         }
     }
 
     @Override
-    public void Venta() {
+    public void Venta(UUID ID) {
+        Seccion<Libro> seccionL = LeerArchivo();
+        List<Libro> libros = seccionL.getElementos();
+
+        for (var libro : libros){
+            if (libro.getID() == ID){
+                setStock(-1);
+            }
+        }
+        seccionL.setElementos(libros);
+
 
     }
 
     @Override
-    public void DarDeBaja() {
-
+    public void DarDeBaja(UUID ID) {
+        Seccion<Libro> seccionL = LeerArchivo();
+        List<Libro> libros = seccionL.getElementos();
+        List<Libro> aux = new ArrayList<Libro>();
+        for (var libro : libros){
+            if (libro.getID() != ID){
+                aux.add(libro);
+            }
+        }
+        seccionL.setElementos(aux);
     }
 
     //region toString
