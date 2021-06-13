@@ -6,10 +6,10 @@ import com.google.gson.reflect.TypeToken;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosD;
 
-import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Disco extends itemVenta{
@@ -17,19 +17,27 @@ public class Disco extends itemVenta{
     private String Solo_Banda;
     private ArrayList<String> Canciones;
     private GenerosD Genero;
-    private LocalDate FechaLanzamiento;
+    private LocalDateTime FechaLanzamiento;
 
     //region Constructores
 
-    public Disco(String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento) {
+    public Disco(String solo_Banda, GenerosD genero, LocalDateTime fechaLanzamiento) {
         Solo_Banda = solo_Banda;
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
     }
 
-    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento) {
+    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDateTime fechaLanzamiento) {
         super(precio, nombre, clasificacion);
         Solo_Banda = solo_Banda;
+        Genero = genero;
+        FechaLanzamiento = fechaLanzamiento;
+    }
+
+    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, ArrayList<String> canciones, GenerosD genero, LocalDateTime fechaLanzamiento) {
+        super(precio, nombre, clasificacion);
+        Solo_Banda = solo_Banda;
+        Canciones = canciones;
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
     }
@@ -49,18 +57,18 @@ public class Disco extends itemVenta{
     public GenerosD getGenero() { return Genero; }
     public void setGenero(GenerosD genero) { Genero = genero; }
 
-    public LocalDate getFechaLanzamiento() { return FechaLanzamiento; }
-    public void setFechaLanzamiento(LocalDate fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
+    public LocalDateTime getFechaLanzamiento() { return FechaLanzamiento; }
+    public void setFechaLanzamiento(LocalDateTime fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
     //endregion
 
-    public void AñadirCanciones(){
+    public void AñadirCanciones(ArrayList <String> canciones){
         String cancion;
         Scanner scanner = new Scanner(System.in);
         String control;
         do {
             System.out.println("Ingrese una cancion del disco: ");
             cancion = scanner.nextLine();
-            this.Canciones.add(cancion);
+            canciones.add(cancion);
             System.out.println("Desea cargar otra cancion? s/n");
             control = scanner.next();
         }while(control.equalsIgnoreCase("S"));
@@ -131,6 +139,7 @@ public class Disco extends itemVenta{
     public void CargarItems() {
         //Se carga un nuevo item al programa
         String control;
+        ArrayList <String> canciones = new ArrayList<>();
         Seccion <Disco> seccionDiscos = new Seccion<>(50);
         do {
 
@@ -147,6 +156,8 @@ public class Disco extends itemVenta{
             //
             //AñadirCanciones();
             //
+            AñadirCanciones(canciones);
+
             //todo arreglar la funcion AñadirCanciones y solucionar problema de soloBanda(no para en el scanner)
 
             //region ClasificacionPorEdad
@@ -198,11 +209,12 @@ public class Disco extends itemVenta{
             }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8);
             //endregion
 
-            System.out.println("Ingrese la fecha de lanzamiento del disco");
-            LocalDate fecha = LocalDate.now();
+            DateTimeFormatter formatterOfPatterns = DateTimeFormatter.ofPattern("d/M/u , h:m:s a");
+            System.out.println("Ingrese la fecha de lanzamiento del disco (Dia/Mes/Año): ");
+            LocalDateTime fecha = LocalDateTime.parse(scanner.nextLine());
             //todo ver el video del profe para aprender a capturar una fecha desde teclado
 
-            Disco disco = new Disco(precio,nombre,clasEdad,soloBanda,genderD,fecha);
+            Disco disco = new Disco(precio,nombre,clasEdad,soloBanda,canciones,genderD,fecha);
             if(seccionDiscos.agregarElemento(disco)){
                 System.out.println("...Se agrego el disco en los elementos de la seccion...");
             }
@@ -250,7 +262,8 @@ public class Disco extends itemVenta{
 
         for (var disco : discos){
             if (disco.getID() == ID){
-                setStock(-1);
+                int stock = disco.getStock();
+                disco.setStock(stock-1);
             }
         }
         seccionD.setElementos(discos);
