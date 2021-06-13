@@ -112,7 +112,7 @@ public class Cliente implements Menu , Serializable {
 
             try {
                 System.out.println("Ingrese una de las siguientes opciones: ");
-                System.out.println("1.Iniciar sesion 2.Registrarse 0.Go Back");
+                System.out.println("1.Iniciar sesion \n2.Registrarse \n0.Go Back");
 
                  caso = scanner.nextInt();
                  Opcion(caso);
@@ -135,6 +135,8 @@ public class Cliente implements Menu , Serializable {
 
                 }while(!control.equalsIgnoreCase("S") && !control.equalsIgnoreCase("N"));
             }
+
+            if(caso==0){control="N";}
 
         }while(control.equalsIgnoreCase("S"));
     }
@@ -170,7 +172,7 @@ public class Cliente implements Menu , Serializable {
                       if(password.equalsIgnoreCase(client.getPassword())){
 
                             System.out.println("Ingreso correctamente: ");
-                            SubMenu();
+                            SubMenu(name);
 
 
                       }else{
@@ -262,7 +264,8 @@ public class Cliente implements Menu , Serializable {
     }
     ///endregion
 
-    private static void SubMenu(){
+    ///Submenu
+    private static void SubMenu(String name){
         String control ="s";
         do{
             Scanner scanner = new Scanner(System.in);
@@ -270,10 +273,10 @@ public class Cliente implements Menu , Serializable {
 
             try {
                 System.out.println("Ingrese una de las siguientes opciones: ");
-                System.out.println("1.Buscar Producto 2.Ver Listado de Productos 3.Comprar producto/s 4.Ver saldo 5.Depositar en cartera 0.Go Back");
+                System.out.println("1.Buscar Producto \n2.Ver Listado de Productos \n3.Comprar producto/s \n4.Ver saldo \n5.Depositar en cartera \n6.Ver/Modificar Perfil \n0.Go Back");
 
                 caso = scanner.nextInt();
-                SubOpcion(caso);
+                SubOpcion(caso,name);
 
             } catch (InputMismatchException e) {
                 System.out.println("El valor ingresado es incorrecto...\nVuelva a intentar\n");
@@ -298,29 +301,8 @@ public class Cliente implements Menu , Serializable {
         }while(control.equalsIgnoreCase("S"));
     }
 
-    ///TODO TENGO QUE METER FUNCIONES ACA
-    private static void SubOpcion(int caso) throws NumException{
 
-        if(caso==1 || caso==2 || caso==3 || caso==4 || caso==5 ||caso==6 || caso==0){
-
-            switch (caso) {
-
-                case 1 -> System.out.println("ACA BUSCAR PRODUCTO");
-                case 2 -> System.out.println("ACA LISTADO DE PRODUCTOS");
-                case 3 -> System.out.println("ACA COMPRAR PRODUCTOS");
-                case 4 -> MostrarCartera();
-                case 5 -> DepositarCartera();
-                case 6 -> VerModificar();
-                default -> System.out.println("...");
-
-            }
-
-        }else{
-            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
-
-        }
-    }
-
+    ///region exceptions
     private static void Opcion(int caso) throws NumException{
 
         if(caso==1 || caso==2 || caso==0){
@@ -339,6 +321,44 @@ public class Cliente implements Menu , Serializable {
         }
     }
 
+    ///TODO TENGO QUE METER FUNCIONES ACA
+    private static void SubOpcion(int caso,String name) throws NumException{
+
+        if(caso==1 || caso==2 || caso==3 || caso==4 || caso==5 ||caso==6 || caso==0){
+
+            switch (caso) {
+
+                case 1 -> System.out.println("ACA BUSCAR PRODUCTO");
+                case 2 -> System.out.println("ACA LISTADO DE PRODUCTOS");
+                case 3 -> System.out.println("ACA COMPRAR PRODUCTOS");
+                case 4 -> MostrarCartera(name);
+                case 5 -> DepositarCartera();
+                case 6 -> VerModificar(name);
+                default -> System.out.println("...");
+
+            }
+
+        }else{
+            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
+
+        }
+    }
+
+    ///TODO TENGO QUE METER FUNCIONES ACA
+    private static void perfil(int caso,String name) throws NumException{
+
+        if(caso==1 || caso==2){
+            if(caso==1){
+                VerPerfil(name);
+            }else{
+                System.out.println("ACA MODIFICAR PERFIL");
+            }
+        }else{
+            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
+        }
+
+    }
+
     private static String controlar() throws Exception{
 
         String control;
@@ -355,37 +375,23 @@ public class Cliente implements Menu , Serializable {
 
         throw new Exception("El valor ingresado es incorrecto...\nVuelva a intentar\n");
     }
+    ///endregion
 
-    private static void VerModificar(){
-        int caso;
-        Scanner scanner =new Scanner(System.in);
 
-        try{
-            System.out.println("Elija una opcion: ");
-            System.out.println("1.Ver perfil \n 2.Modificar Perfil");
+    private static void MostrarCartera(String name){
+        boolean flag = false;
 
-            caso = scanner.nextInt();
+        HashMap<Integer,Cliente> map= Leer();
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
 
-           perfil(caso);
+        while(mapIterator.hasNext() && !flag){
+            Cliente client = mapIterator.next().getValue();
 
-        }catch (InputMismatchException | NumException e){
-            System.out.println(e.getMessage());
-        }
+            if(client.getNombreUsuario().equalsIgnoreCase(name)){
+                System.out.println("Cartera : " + client.getCartera());
+                flag = true;
 
-    }
-
-    ///todo VER O MODIFICAR PERFIL
-    ///TODO TENGO QUE METER FUNCIONES ACA
-    private static void perfil(int caso) throws NumException{
-
-        if(caso==1 || caso==2){
-            if(caso==1){
-                System.out.println("ACA VER PERFIL");
-            }else{
-                System.out.println("ACA MODIFICAR PERFIL");
             }
-        }else{
-            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
         }
 
     }
@@ -404,7 +410,6 @@ public class Cliente implements Menu , Serializable {
                 Cliente client = mapIterator.next().getValue();
 
                 if(client.getDni()==dni){
-                    ///dasdasdasdas
                     System.out.println("Ingrese el monto que desea depositar:");
                     double monto = scanner.nextDouble();
                     double cartera = client.getCartera();
@@ -425,12 +430,49 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    private static void MostrarCartera(){
+    private static void VerModificar(String name){
+        int caso;
+        Scanner scanner =new Scanner(System.in);
 
-        Scanner scanner = new Scanner(System.in);
+        HashMap<Integer,Cliente> map= Leer();
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
+        try{
+            System.out.println("Elija una opcion: ");
+            System.out.println("1.Ver perfil \n2.Modificar Perfil");
+
+            caso = scanner.nextInt();
+
+            perfil(caso,name);
+
+        }catch (InputMismatchException | NumException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    private static void VerPerfil(String name){
+        HashMap<Integer,Cliente> map= Leer();
         boolean flag =false;
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
 
-        System.out.println("Ingrese el dni para continuar:");
+        while(mapIterator.hasNext() && !flag){
+            Cliente client = mapIterator.next().getValue();
+
+            if(client.getNombreUsuario().equalsIgnoreCase(name)){
+                System.out.println(client);
+                System.out.println("-Cartera= " + client.getCartera() +  "\n-Password = " + client.getPassword());
+                flag = true;
+            }
+        }
+    }
+
+    ///todo terminar funcion
+    private static void ModificarPerfil(){
+        Scanner scanner = new Scanner(System.in);
+        boolean flag = false;
+
+        System.out.println("Ingrese su dni: ");
         int dni = scanner.nextInt();
 
         HashMap<Integer,Cliente> map= Leer();
@@ -440,22 +482,17 @@ public class Cliente implements Menu , Serializable {
             Cliente client = mapIterator.next().getValue();
 
             if(client.getDni()==dni){
-                System.out.println("Cartera : " + client.getCartera());
-                flag = true;
 
+                ///PREGUNTAR QUE QUIERE CAMBIAR Y FUNCION QUE REALICE CAMBIOS
+
+                flag = true;
             }
         }
 
-        if(!flag){
-            System.out.println("El dni no se encuentra registrado...");
-
-        }
 
     }
 
-    ///todo implementar pasaje de nombre por parametro para verificar datos ej depositar cartera verifica que sepa el dni del usuario antes pasado por parametro
-
-    ///todo  posible historial de compras
+    ///TODO  posible historial de compras
 
     @Override
     public String toString() {
