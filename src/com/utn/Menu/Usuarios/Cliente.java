@@ -56,7 +56,6 @@ public class Cliente implements Menu , Serializable {
 
     ///region Funciones archivo
 
-    ///Carga un mapa en el archivo
     private static  void CargarMapaArchivo(HashMap<Integer,Cliente> map){
         try{
 
@@ -70,7 +69,6 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    ///Abre el archivo y muestra tod0 el contenido
     private static void MostrarArchivo(){
         try{
             FileInputStream fileInputStream =new FileInputStream("Clientes.json");
@@ -142,7 +140,6 @@ public class Cliente implements Menu , Serializable {
     }
 
     ///region Funciones de inicio/registro
-    // /CREAR LOOP DE CONTRASEÑA INCORRECTA SI EXISTE EL USUARIO PERO NO ES LA CONTRASEÑA
     public static void IniciarSesion(){
 
             Scanner scanner = new Scanner(System.in);
@@ -276,7 +273,7 @@ public class Cliente implements Menu , Serializable {
                 System.out.println("1.Buscar Producto \n2.Ver Listado de Productos \n3.Comprar producto/s \n4.Ver saldo \n5.Depositar en cartera \n6.Ver/Modificar Perfil \n0.Go Back");
 
                 caso = scanner.nextInt();
-                SubOpcion(caso,name);
+                name=SubOpcion(caso,name);
 
             } catch (InputMismatchException e) {
                 System.out.println("El valor ingresado es incorrecto...\nVuelva a intentar\n");
@@ -301,8 +298,9 @@ public class Cliente implements Menu , Serializable {
         }while(control.equalsIgnoreCase("S"));
     }
 
-
     ///region exceptions
+
+    ///region switch
     private static void Opcion(int caso) throws NumException{
 
         if(caso==1 || caso==2 || caso==0){
@@ -322,9 +320,9 @@ public class Cliente implements Menu , Serializable {
     }
 
     ///TODO TENGO QUE METER FUNCIONES ACA
-    private static void SubOpcion(int caso,String name) throws NumException{
+    private static String SubOpcion(int caso,String name) throws NumException{
 
-        if(caso==1 || caso==2 || caso==3 || caso==4 || caso==5 ||caso==6 || caso==0){
+        if((caso>=1 && caso<=6) || caso==0){
 
             switch (caso) {
 
@@ -333,10 +331,12 @@ public class Cliente implements Menu , Serializable {
                 case 3 -> System.out.println("ACA COMPRAR PRODUCTOS");
                 case 4 -> MostrarCartera(name);
                 case 5 -> DepositarCartera();
-                case 6 -> VerModificar(name);
+                case 6 -> name=VerModificar(name);
                 default -> System.out.println("...");
 
             }
+
+            return name;
 
         }else{
             throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
@@ -344,20 +344,44 @@ public class Cliente implements Menu , Serializable {
         }
     }
 
-    ///TODO TENGO QUE METER FUNCIONES ACA
-    private static void perfil(int caso,String name) throws NumException{
+    private static String perfil(int caso,String name) throws NumException{
 
         if(caso==1 || caso==2){
             if(caso==1){
                 VerPerfil(name);
             }else{
-                System.out.println("ACA MODIFICAR PERFIL");
+                name=ModificarPerfil(name);
             }
+            return name;
         }else{
             throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
         }
 
     }
+
+    private static String Modificar(int caso,String name) throws  NumException{
+
+        if((caso>=1 && caso<=4) || caso==0){
+
+            switch (caso) {
+
+                case 1 -> name=CambiarNombre(name);
+                case 2 -> CambiarPass(name);
+                case 3 -> CambiarDni(name);
+                case 4 -> name=CambiarTodo(name);
+                default -> System.out.println("...");
+
+            }
+            return name;
+
+        }else{
+            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
+
+        }
+
+    }
+
+    ///endregion
 
     private static String controlar() throws Exception{
 
@@ -377,6 +401,7 @@ public class Cliente implements Menu , Serializable {
     }
     ///endregion
 
+    ///region Funciones Cartera
 
     private static void MostrarCartera(String name){
         boolean flag = false;
@@ -430,12 +455,12 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    private static void VerModificar(String name){
+    ///endregion
+
+    ///region Perfil
+    private static String VerModificar(String name){
         int caso;
         Scanner scanner =new Scanner(System.in);
-
-        HashMap<Integer,Cliente> map= Leer();
-        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
 
         try{
             System.out.println("Elija una opcion: ");
@@ -443,11 +468,14 @@ public class Cliente implements Menu , Serializable {
 
             caso = scanner.nextInt();
 
-            perfil(caso,name);
+            name=perfil(caso,name);
+
+
 
         }catch (InputMismatchException | NumException e){
             System.out.println(e.getMessage());
         }
+        return name;
 
     }
 
@@ -467,12 +495,101 @@ public class Cliente implements Menu , Serializable {
         }
     }
 
-    ///todo terminar funcion
-    private static void ModificarPerfil(){
+    private static String ModificarPerfil(String name){
         Scanner scanner = new Scanner(System.in);
         boolean flag = false;
 
         System.out.println("Ingrese su dni: ");
+        int dni = scanner.nextInt();
+
+
+
+
+        try {
+
+            HashMap<Integer,Cliente> map= Leer();
+            Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
+            while(mapIterator.hasNext() && !flag){
+                Cliente client = mapIterator.next().getValue();
+
+                if(client.getNombreUsuario().equalsIgnoreCase(name)){
+
+                    if(client.getDni()==dni){
+                        System.out.println("Digite que es lo que quiere modificar : ");
+                        System.out.println("1.Nombre \n2.Dni \n3.Contraseña \n4.Todo\n0.Go Back");
+
+                        int caso = scanner.nextInt();
+                        name=Modificar(caso,name);
+
+                    }else{
+                        System.out.println("El dni ingresado es incorrecto");
+                    }
+
+                    flag = true;
+                }
+            }
+
+        } catch (InputMismatchException e) {
+            System.out.println("El valor ingresado es incorrecto...\nVuelva a intentar\n");
+
+        } catch (NumException e){
+            System.out.println(e.getMessage());
+
+        }
+        return name;
+    }
+
+    private static String CambiarNombre(String name){
+        boolean flag = false;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese el nuevo nombre de usuario:");
+        String usuario = scanner.next();
+
+        HashMap<Integer,Cliente> map= Leer();
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
+        while(mapIterator.hasNext() && !flag){
+            Cliente client = mapIterator.next().getValue();
+
+            if(client.getNombreUsuario().equalsIgnoreCase(name)){
+                client.setNombreUsuario(usuario);
+                flag = true;
+            }
+        }
+        CargarMapaArchivo(map);
+
+        return usuario;
+    }
+
+    private static void CambiarPass(String name){
+        boolean flag = false;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese la nueva password de usuario:");
+        String pass = scanner.next();
+
+        HashMap<Integer,Cliente> map= Leer();
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
+        while(mapIterator.hasNext() && !flag){
+            Cliente client = mapIterator.next().getValue();
+
+            if(client.getNombreUsuario().equalsIgnoreCase(name)){
+                client.setPassword(pass);
+                flag = true;
+            }
+        }
+        CargarMapaArchivo(map);
+
+    }
+
+    private static void CambiarDni(String name){
+        boolean flag = false;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese el nuevo Dni de usuario : " );
         int dni = scanner.nextInt();
 
         HashMap<Integer,Cliente> map= Leer();
@@ -481,18 +598,24 @@ public class Cliente implements Menu , Serializable {
         while(mapIterator.hasNext() && !flag){
             Cliente client = mapIterator.next().getValue();
 
-            if(client.getDni()==dni){
-
-                ///PREGUNTAR QUE QUIERE CAMBIAR Y FUNCION QUE REALICE CAMBIOS
-
+            if(client.getNombreUsuario().equalsIgnoreCase(name)){
+                client.setDni(dni);
                 flag = true;
             }
         }
-
+        CargarMapaArchivo(map);
 
     }
 
-    ///TODO  posible historial de compras
+    private static String CambiarTodo(String name){
+        String nuevo=CambiarNombre(name);
+        CambiarDni(nuevo);
+        CambiarPass(nuevo);
+
+        return nuevo;
+    }
+
+    ///endregion
 
     @Override
     public String toString() {
