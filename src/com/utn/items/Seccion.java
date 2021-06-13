@@ -8,10 +8,6 @@ public class Seccion<T> {
     private List<T> elementos = new ArrayList<>();
     private int tope;
 
-    public Seccion(int tope){
-        this.tope = tope;
-    }
-
     //region Getters y Setters
     public List<T> getElementos() {
         return elementos;
@@ -30,10 +26,14 @@ public class Seccion<T> {
     }
     //endregion
 
+    public Seccion(int tope){
+        this.tope = tope;
+    }
+
     ///todo Probar sacando tope
 
     public boolean agregarElemento(T t) {
-        if (tope < elementos.size()) {
+        if (tope > elementos.size()) {
             elementos.add(t);
             return true;
         }

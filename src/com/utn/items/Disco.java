@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosD;
 
+import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
@@ -20,14 +21,15 @@ public class Disco extends itemVenta{
 
     //region Constructores
 
-    public Disco(float precio,String nombre, ClasificacionEdad clasificacion) {
-        super(precio, nombre, clasificacion);
+    public Disco(String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento) {
+        Solo_Banda = solo_Banda;
+        Genero = genero;
+        FechaLanzamiento = fechaLanzamiento;
     }
 
-    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, ArrayList<String> canciones, GenerosD genero, LocalDate fechaLanzamiento) {
+    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento) {
         super(precio, nombre, clasificacion);
         Solo_Banda = solo_Banda;
-        Canciones= new ArrayList<String>();
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
     }
@@ -50,6 +52,19 @@ public class Disco extends itemVenta{
     public LocalDate getFechaLanzamiento() { return FechaLanzamiento; }
     public void setFechaLanzamiento(LocalDate fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
     //endregion
+
+    public void AñadirCanciones(){
+        String cancion;
+        Scanner scanner = new Scanner(System.in);
+        String control;
+        do {
+            System.out.println("Ingrese una cancion del disco: ");
+            cancion = scanner.nextLine();
+            this.Canciones.add(cancion);
+            System.out.println("Desea cargar otra cancion? s/n");
+            control = scanner.next();
+        }while(control.equalsIgnoreCase("S"));
+    }
 
     @Override
     public void CrearArchivo() {
@@ -116,7 +131,9 @@ public class Disco extends itemVenta{
     public void CargarItems() {
         //Se carga un nuevo item al programa
         String control;
+        Seccion <Disco> seccionDiscos = new Seccion<>(50);
         do {
+
             Scanner scanner = new Scanner(System.in);
             System.out.println("Ingrese el nombre del disco: ");
             String nombre = scanner.nextLine();
@@ -128,8 +145,9 @@ public class Disco extends itemVenta{
             String soloBanda = scanner.nextLine();
 
             //
-            //Aca iria Añadir canciones
+            //AñadirCanciones();
             //
+            //todo arreglar la funcion AñadirCanciones y solucionar problema de soloBanda(no para en el scanner)
 
             //region ClasificacionPorEdad
             int Edad;
@@ -180,16 +198,20 @@ public class Disco extends itemVenta{
             }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8);
             //endregion
 
-            //
-            //Aca va el local Date
-            //
+            System.out.println("Ingrese la fecha de lanzamiento del disco");
+            LocalDate fecha = LocalDate.now();
+            //todo ver el video del profe para aprender a capturar una fecha desde teclado
 
-            //Disco disco = new Disco(CON LOS PARAMETROS ACA PRIMERO HACER LOCALDATE Y AÑADIR CANCIONES);
+            Disco disco = new Disco(precio,nombre,clasEdad,soloBanda,genderD,fecha);
+            if(seccionDiscos.agregarElemento(disco)){
+                System.out.println("...Se agrego el disco en los elementos de la seccion...");
+            }
 
-            System.out.println("Desea cargar otro libro? s/n");
+            System.out.println("Desea cargar otro disco? s/n");
             control = scanner.next();
 
         }while (control.equalsIgnoreCase("S"));
+        EscribirArchivo(seccionDiscos);
 
     }
 

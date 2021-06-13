@@ -87,7 +87,7 @@ public abstract class itemVenta {
 
     @Override
     public String toString() {
-        return "Item(ID= " + this.ID + ", Nombre= " + this.nombre + ", Stock= " +
-                this.stock + ", Clasificacion= " + this.clasificacion + ", Precio= " + this.precio + ")";
+        return "ID= [" + this.ID + "], Nombre= " + this.nombre + ", Stock= " +
+                this.stock + ", Clasificacion= " + this.clasificacion + ", Precio= $" + this.precio;
     }
 }

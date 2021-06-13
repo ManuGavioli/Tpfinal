@@ -56,7 +56,7 @@ public class JuegoMesa extends itemVenta{
         BufferedReader reader = null;
 
         try{
-            reader = new BufferedReader(new FileReader(new File("juegosDeMesa.json")));
+            reader = new BufferedReader(new FileReader("juegosDeMesa.json"));
             aux = gson.fromJson(reader,seccion);
         }catch (IOException e){
             e.printStackTrace();
@@ -79,7 +79,7 @@ public class JuegoMesa extends itemVenta{
         BufferedWriter guardar = null;
 
         try{
-            guardar = new BufferedWriter(new FileWriter(new File("juegosDeMesa.json")));
+            guardar = new BufferedWriter(new FileWriter("juegosDeMesa.json"));
 
             gson.toJson(datoDeSeccion, seccion, guardar);
         }catch (IOException e){
@@ -101,10 +101,10 @@ public class JuegoMesa extends itemVenta{
     public void CargarItems() {
         //Pide al staff que cargue un item
         String control;
+        Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
 
         do{
             Scanner scanner= new Scanner(System.in);
-            Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
 
             System.out.println("Ingrese el nombre del juego de mesa: ");
             String nombre = scanner.nextLine();
@@ -158,13 +158,16 @@ public class JuegoMesa extends itemVenta{
             //endregion
 
             JuegoMesa juego = new JuegoMesa(numero,nombre,clasEdad,genderJM);
+            if(juegosDeMesa.agregarElemento(juego)){
+                System.out.println("...Se agrego el juego en los elementos de la seccion...");
+            }
 
-            // HACER BIEN GENERICIDAD CON ARCHIVOS EN ESTA PARTE
-
-            System.out.println("Desea cargar otro juego? s/n");
+            System.out.println("\nDesea cargar otro juego? s/n");
             control = scanner.next();
 
         }while(control.equalsIgnoreCase("S"));
+
+        EscribirArchivo(juegosDeMesa);
     }
 
     @Override
@@ -185,7 +188,7 @@ public class JuegoMesa extends itemVenta{
         Iterator <JuegoMesa> iterator = juegos.iterator();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese el nombre del libro, autor o editorial de este: \s");
+        System.out.println("Ingrese el nombre del juego de mesa: \s");
         String dato = scanner.nextLine();
 
         while (iterator.hasNext()){
@@ -206,8 +209,6 @@ public class JuegoMesa extends itemVenta{
             }
         }
         seccionJM.setElementos(juegos);
-
-
     }
 
     @Override
@@ -226,9 +227,9 @@ public class JuegoMesa extends itemVenta{
     //region toString
     @Override
     public String toString() {
-        return  "Juego de mesa (" + super.toString() +
+        return  "Juego de mesa = {" + super.toString() +
                 ", Genero= " + this.genero +
-                ")";
+                "}";
     }
     //endregion
 }

@@ -117,6 +117,8 @@ public class Libro extends itemVenta{
     public void CargarItems() {
         //Aca se carga un item al listado
         String control;
+        Seccion <Libro> seccionLibros = new Seccion<>(50);
+
         do {
             Scanner scanner = new Scanner (System.in);
 
@@ -187,10 +189,16 @@ public class Libro extends itemVenta{
 
             Libro libro = new Libro(precio,nombre,clasEdad,generL,autor,editorial);
 
+            if(seccionLibros.agregarElemento(libro)){
+                System.out.println("...Se agrego el libro en los elementos de la seccion...");
+            }
+
             System.out.println("Desea cargar otro libro? s/n");
             control = scanner.next();
 
         }while(control.equalsIgnoreCase("S"));
+
+        EscribirArchivo(seccionLibros);
     }
 
 
