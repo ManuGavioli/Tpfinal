@@ -108,6 +108,7 @@ public class JuegoMesa extends itemVenta{
 
             System.out.println("Ingrese el nombre del juego de mesa: ");
             String nombre = scanner.nextLine();
+            //todo verificar si el nombre existe y si existe aumentar el stock en 1
 
             System.out.println("Ingrese el precio del juego de mesa: ");
             float numero = scanner.nextFloat();
@@ -181,6 +182,7 @@ public class JuegoMesa extends itemVenta{
         }
     }
 
+    //todo hacer que retorne un boolean y que pida el nombre por parametro
     @Override
     public void BuscarItems() {
         boolean flag = false;
@@ -203,9 +205,10 @@ public class JuegoMesa extends itemVenta{
         Seccion<JuegoMesa> seccionJM = LeerArchivo();
         List<JuegoMesa> juegos = seccionJM.getElementos();
 
+        //puede ser que el for each genere conflictos al modificar cosas
         for (var juego : juegos){
             if (juego.getID() == ID){
-                setStock(-1);
+                setStock((super.getStock()-1));
             }
         }
         seccionJM.setElementos(juegos);

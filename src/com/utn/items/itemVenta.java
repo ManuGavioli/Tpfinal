@@ -7,7 +7,7 @@ import java.util.UUID;
 public abstract class itemVenta {
     private UUID ID;
     private float precio;
-    private int stock;
+    private int stock = 0;
     private String nombre;
     private ClasificacionEdad clasificacion;
 
@@ -19,7 +19,6 @@ public abstract class itemVenta {
     public itemVenta(float precio, String nombre, ClasificacionEdad clasificacion) {
         this.ID = UUID.randomUUID();
         this.precio = precio;
-        this.stock = stock++;
         this.nombre = nombre;
         this.clasificacion = clasificacion;
     }
