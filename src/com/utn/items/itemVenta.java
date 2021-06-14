@@ -16,11 +16,12 @@ public abstract class itemVenta {
 
     }
 
-    public itemVenta(float precio, String nombre, ClasificacionEdad clasificacion) {
+    public itemVenta(float precio, String nombre, ClasificacionEdad clasificacion, int stock) {
         this.ID = UUID.randomUUID();
         this.precio = precio;
         this.nombre = nombre;
         this.clasificacion = clasificacion;
+        this.stock = stock;
     }
     //endregion
 
@@ -78,7 +79,7 @@ public abstract class itemVenta {
 
     public abstract void MostrarListado();
 
-    public abstract void BuscarItems();
+    public abstract boolean BuscarItems(String nombre);
 
     public abstract void Venta(UUID ID);
 

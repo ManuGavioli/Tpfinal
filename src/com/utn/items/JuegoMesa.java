@@ -14,8 +14,8 @@ public class JuegoMesa extends itemVenta{
     private GenerosJM genero;
 
     //region Constructores
-    public JuegoMesa(float precio, String nombre, ClasificacionEdad clasificacion, GenerosJM genero) {
-        super(precio, nombre, clasificacion);
+    public JuegoMesa(float precio, String nombre, ClasificacionEdad clasificacion, GenerosJM genero,int stock) {
+        super(precio, nombre, clasificacion,stock);
         this.genero = genero;
     }
 
@@ -82,11 +82,9 @@ public class JuegoMesa extends itemVenta{
             guardar = new BufferedWriter(new FileWriter("juegosDeMesa.json"));
 
             gson.toJson(datoDeSeccion, seccion, guardar);
-        }catch (IOException e){
+        } catch (Exception e){
             e.printStackTrace();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
+        } finally {
             if(guardar != null){
                 try {
                     guardar.close();
@@ -100,7 +98,7 @@ public class JuegoMesa extends itemVenta{
     @Override
     public void CargarItems() {
         //Pide al staff que cargue un item
-        String control;
+        String control = ".";
         Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
 
         do{
@@ -108,36 +106,41 @@ public class JuegoMesa extends itemVenta{
 
             System.out.println("Ingrese el nombre del juego de mesa: ");
             String nombre = scanner.nextLine();
-            //todo verificar si el nombre existe y si existe aumentar el stock en 1
 
-            System.out.println("Ingrese el precio del juego de mesa: ");
-            float numero = scanner.nextFloat();
+            boolean flag = BuscarItems(nombre);
 
-            //region ClasificacionPorEdad
-            int Edad;
-            ClasificacionEdad clasEdad = null;
-            do{
-                System.out.println("""
+            if(!flag){
+                System.out.println("Ingrese el precio del juego de mesa: ");
+                float numero = scanner.nextFloat();
+
+                System.out.println("Ingrese la cantidad de productos en stock: ");
+                int stock = scanner.nextInt();
+
+                //region ClasificacionPorEdad
+                int Edad;
+                ClasificacionEdad clasEdad = null;
+                do{
+                    System.out.println("""
                 Ingrese la clasificacion de edad del juego de mesa:\s
                 1 - Niños.
                 2 - Adolecentes.
                 3 - Adultos.
                 """);
-                Edad = scanner.nextInt();
-                switch (Edad) {
-                    case 1 -> clasEdad = ClasificacionEdad.NINIOS;
-                    case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
-                    case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
-                    default -> System.out.println("Opcion no valida. Reintente");
-                }
-            }while(Edad != 1 && Edad != 2 && Edad != 3);
-            //endregion
+                    Edad = scanner.nextInt();
+                    switch (Edad) {
+                        case 1 -> clasEdad = ClasificacionEdad.NINIOS;
+                        case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
+                        case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
+                        default -> System.out.println("Opcion no valida. Reintente");
+                    }
+                }while(Edad != 1 && Edad != 2 && Edad != 3);
+                //endregion
 
-            //region ClasificacionPorGenero
-            int gen;
-            GenerosJM genderJM = null;
-            do {
-                System.out.println("""
+                //region ClasificacionPorGenero
+                int gen;
+                GenerosJM genderJM = null;
+                do {
+                    System.out.println("""
                 Ingrese el genero del juego de mesa:\s
                 1 - Puzzle.
                 2 - Cartas.
@@ -145,26 +148,37 @@ public class JuegoMesa extends itemVenta{
                 4 - Fiesta.
                 5 - Rol.
                 """);
-                gen = scanner.nextInt();
-                switch (gen) {
-                    case 1 -> genderJM = GenerosJM.PUZZLE;
-                    case 2 -> genderJM = GenerosJM.CARTAS;
-                    case 3 -> genderJM = GenerosJM.DADOS;
-                    case 4 -> genderJM = GenerosJM.FIESTA;
-                    case 5 -> genderJM = GenerosJM.ROL;
-                    default -> System.out.println("Opcion no valida. Reintente");
+                    gen = scanner.nextInt();
+                    switch (gen) {
+                        case 1 -> genderJM = GenerosJM.PUZZLE;
+                        case 2 -> genderJM = GenerosJM.CARTAS;
+                        case 3 -> genderJM = GenerosJM.DADOS;
+                        case 4 -> genderJM = GenerosJM.FIESTA;
+                        case 5 -> genderJM = GenerosJM.ROL;
+                        default -> System.out.println("Opcion no valida. Reintente");
+                    }
+                }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5);
+
+                //endregion
+
+                JuegoMesa juego = new JuegoMesa(numero,nombre,clasEdad,genderJM,stock);
+                if(juegosDeMesa.agregarElemento(juego)){
+                    System.out.println("...Se agrego el juego en los elementos de la seccion...");
                 }
-            }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5);
 
-            //endregion
-
-            JuegoMesa juego = new JuegoMesa(numero,nombre,clasEdad,genderJM);
-            if(juegosDeMesa.agregarElemento(juego)){
-                System.out.println("...Se agrego el juego en los elementos de la seccion...");
+                System.out.println("\nDesea cargar otro juego? s/n");
+                control = scanner.next();
+            }else{
+                List<JuegoMesa> juegos = LeerArchivo().getElementos();
+                Iterator<JuegoMesa> iterator = juegos.iterator();
+                System.out.println("El elemento : "+nombre+ "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
+                int stock = scanner.nextInt();
+                while (iterator.hasNext()){
+                    if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+                        iterator.next().setStock((this.getStock()+stock));
+                    }
+                }
             }
-
-            System.out.println("\nDesea cargar otro juego? s/n");
-            control = scanner.next();
 
         }while(control.equalsIgnoreCase("S"));
 
@@ -173,42 +187,36 @@ public class JuegoMesa extends itemVenta{
 
     @Override
     public void MostrarListado() {
-        List<JuegoMesa> juegos = LeerArchivo().getElementos();
+        List <JuegoMesa> juegos = LeerArchivo().getElementos();
 
-        Iterator<JuegoMesa> iterator = juegos.iterator();
-
-        while (iterator.hasNext()){
-            System.out.println(iterator.next());
+        for (var juego:juegos){
+            System.out.println(juego);
         }
     }
 
-    //todo hacer que retorne un boolean y que pida el nombre por parametro
     @Override
-    public void BuscarItems() {
+    public boolean BuscarItems(String nombre) {
         boolean flag = false;
         List <JuegoMesa> juegos = LeerArchivo().getElementos();
         Iterator <JuegoMesa> iterator = juegos.iterator();
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese el nombre del juego de mesa: \s");
-        String dato = scanner.nextLine();
-
-        while (iterator.hasNext()){
-            if(iterator.next().getNombre() == dato){
-                System.out.println(iterator.next());
+        while (iterator.hasNext() && !flag){
+            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+                flag = true;
             }
         }
+        return flag;
     }
 
     @Override
     public void Venta(UUID ID) {
         Seccion<JuegoMesa> seccionJM = LeerArchivo();
         List<JuegoMesa> juegos = seccionJM.getElementos();
+        int tope = seccionJM.getTope();
 
-        //puede ser que el for each genere conflictos al modificar cosas
-        for (var juego : juegos){
-            if (juego.getID() == ID){
-                setStock((super.getStock()-1));
+        for (int i =0 ; i<tope;i++){
+            if (juegos.get(i).getID() == ID){
+                setStock((this.getStock()-1));
             }
         }
         seccionJM.setElementos(juegos);
@@ -218,10 +226,11 @@ public class JuegoMesa extends itemVenta{
     public void DarDeBaja(UUID ID) {
         Seccion<JuegoMesa> seccionJM = LeerArchivo();
         List<JuegoMesa> juegos = seccionJM.getElementos();
-        List<JuegoMesa> aux = new ArrayList<JuegoMesa>();
-        for (var juego : juegos){
-            if (juego.getID() != ID){
-                aux.add(juego);
+        List<JuegoMesa> aux = new ArrayList<>();
+        int tope = seccionJM.getTope();
+        for (int i = 0;i<tope;i++){
+            if (juegos.get(i).getID() != ID){
+                aux.add(juegos.get(i));
             }
         }
         seccionJM.setElementos(aux);

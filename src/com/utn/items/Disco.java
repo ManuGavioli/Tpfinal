@@ -27,15 +27,16 @@ public class Disco extends itemVenta{
         FechaLanzamiento = fechaLanzamiento;
     }
 
-    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDateTime fechaLanzamiento) {
-        super(precio, nombre, clasificacion);
+    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDateTime fechaLanzamiento,int stock) {
+        super(precio, nombre, clasificacion,stock);
         Solo_Banda = solo_Banda;
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
     }
 
-    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, ArrayList<String> canciones, GenerosD genero, LocalDateTime fechaLanzamiento) {
-        super(precio, nombre, clasificacion);
+    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda,
+                 ArrayList<String> canciones, GenerosD genero, LocalDateTime fechaLanzamiento,int stock) {
+        super(precio, nombre, clasificacion,stock);
         Solo_Banda = solo_Banda;
         Canciones = canciones;
         Genero = genero;
@@ -120,11 +121,9 @@ public class Disco extends itemVenta{
             guardar = new BufferedWriter(new FileWriter(new File("discos.json")));
 
             gson.toJson(datoDeSeccion, seccion, guardar);
-        }catch (IOException e){
+        } catch (Exception e){
             e.printStackTrace();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
+        } finally {
             if(guardar != null){
                 try {
                     guardar.close();
@@ -146,25 +145,27 @@ public class Disco extends itemVenta{
             Scanner scanner = new Scanner(System.in);
             System.out.println("Ingrese el nombre del disco: ");
             String nombre = scanner.nextLine();
+            boolean flag = BuscarItems(nombre);
 
-            System.out.println("Ingrese el precio del producto: ");
-            float precio = scanner.nextFloat();
+            if(!flag){
+                System.out.println("Ingrese el nombre de la banda o del solista: ");
+                String soloBanda = scanner.nextLine();
 
-            System.out.println("Ingrese el nombre de la banda o del solista: ");
-            String soloBanda = scanner.nextLine();
+                System.out.println("Ingrese el precio del producto: ");
+                float precio = scanner.nextFloat();
 
-            //
-            //AñadirCanciones();
-            //
-            AñadirCanciones(canciones);
+                System.out.println("Ingrese la cantidad de productos en stock: ");
+                int stock = scanner.nextInt();
 
-            //todo arreglar la funcion AñadirCanciones y solucionar problema de soloBanda(no para en el scanner)
+                AñadirCanciones(canciones);
 
-            //region ClasificacionPorEdad
-            int Edad;
-            ClasificacionEdad clasEdad = null;
-            do{
-                System.out.println("""
+                //todo solucionar problema de soloBanda(no para en el scanner)
+
+                //region ClasificacionPorEdad
+                int Edad;
+                ClasificacionEdad clasEdad = null;
+                do{
+                    System.out.println("""
                 Ingrese la clasificacion de edad del disco:\s
                 1 - Niños.
                 2 - Adolecentes.
@@ -178,13 +179,13 @@ public class Disco extends itemVenta{
                         default -> System.out.println("Opcion no valida. Reintente");
                     }
                 }while(Edad != 1 && Edad != 2 && Edad != 3);
-            //endregion
+                //endregion
 
-            //region ClasificacionPorGenero
-            GenerosD genderD = null;
-            int gen;
-            do {
-                System.out.println("""
+                //region ClasificacionPorGenero
+                GenerosD genderD = null;
+                int gen;
+                do {
+                    System.out.println("""
                         Ingrese el genero del disco: \s
                         1 - Rock.
                         2 - Pop.
@@ -194,30 +195,41 @@ public class Disco extends itemVenta{
                         6 - Blues.
                         7 - R&B.
                         8 - Hip Hop.""");
-                gen = scanner.nextInt();
-                switch (gen){
-                    case 1 -> genderD = GenerosD.ROCK;
-                    case 2 -> genderD = GenerosD.POP;
-                    case 3 -> genderD = GenerosD.JAZZ;
-                    case 4 -> genderD = GenerosD.ELECTRONICA;
-                    case 5 -> genderD = GenerosD.CLASICA;
-                    case 6 -> genderD = GenerosD.BLUES;
-                    case 7 -> genderD = GenerosD.RandB;
-                    case 8 -> genderD = GenerosD.HIP_HOP;
-                    default -> System.out.println("Opcion no valida. Reintente");
+                    gen = scanner.nextInt();
+                    switch (gen){
+                        case 1 -> genderD = GenerosD.ROCK;
+                        case 2 -> genderD = GenerosD.POP;
+                        case 3 -> genderD = GenerosD.JAZZ;
+                        case 4 -> genderD = GenerosD.ELECTRONICA;
+                        case 5 -> genderD = GenerosD.CLASICA;
+                        case 6 -> genderD = GenerosD.BLUES;
+                        case 7 -> genderD = GenerosD.RandB;
+                        case 8 -> genderD = GenerosD.HIP_HOP;
+                        default -> System.out.println("Opcion no valida. Reintente");
+                    }
+                }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8);
+                //endregion
+
+                DateTimeFormatter formatterOfPatterns = DateTimeFormatter.ofPattern("d/M/u , h:m:s a");
+                System.out.println("Ingrese la fecha de lanzamiento del disco (Dia/Mes/Año): ");
+                LocalDateTime fecha = LocalDateTime.parse(scanner.nextLine(),formatterOfPatterns);
+
+                Disco disco = new Disco(precio,nombre,clasEdad,soloBanda,canciones,genderD,fecha,stock);
+                if(seccionDiscos.agregarElemento(disco)){
+                    System.out.println("...Se agrego el disco en los elementos de la seccion...");
                 }
-            }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8);
-            //endregion
-
-            DateTimeFormatter formatterOfPatterns = DateTimeFormatter.ofPattern("d/M/u , h:m:s a");
-            System.out.println("Ingrese la fecha de lanzamiento del disco (Dia/Mes/Año): ");
-            LocalDateTime fecha = LocalDateTime.parse(scanner.nextLine());
-            //todo ver el video del profe para aprender a capturar una fecha desde teclado
-
-            Disco disco = new Disco(precio,nombre,clasEdad,soloBanda,canciones,genderD,fecha);
-            if(seccionDiscos.agregarElemento(disco)){
-                System.out.println("...Se agrego el disco en los elementos de la seccion...");
+            }else {
+                List<Disco> discos = LeerArchivo().getElementos();
+                Iterator<Disco> iterator = discos.iterator();
+                System.out.println("El elemento : " + nombre + "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
+                int stock = scanner.nextInt();
+                while (iterator.hasNext()) {
+                    if (iterator.next().getNombre().equalsIgnoreCase(nombre)) {
+                        iterator.next().setStock((this.getStock() + stock));
+                    }
+                }
             }
+
 
             System.out.println("Desea cargar otro disco? s/n");
             control = scanner.next();
@@ -229,30 +241,25 @@ public class Disco extends itemVenta{
 
     @Override
     public void MostrarListado() {
-        List<Disco> discos = LeerArchivo().getElementos();
+        List <Disco> discos = LeerArchivo().getElementos();
 
-        Iterator<Disco> iterator = discos.iterator();
-
-        while (iterator.hasNext()){
-            System.out.println(iterator.next());
+        for (var disco:discos){
+            System.out.println(disco);
         }
     }
 
     @Override
-    public void BuscarItems() {
+    public boolean BuscarItems(String nombre) {
         boolean flag = false;
         List <Disco> discos = LeerArchivo().getElementos();
         Iterator <Disco> iterator = discos.iterator();
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese el nombre del libro, autor o editorial de este: \s");
-        String dato = scanner.nextLine();
-
-        while (iterator.hasNext()){
-            if(iterator.next().getNombre() == dato || iterator.next().getSolo_Banda() == dato){
-                System.out.println(iterator.next());
+        while (iterator.hasNext() && !flag){
+            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+                flag = true;
             }
         }
+        return flag;
     }
 
     @Override
@@ -275,10 +282,11 @@ public class Disco extends itemVenta{
     public void DarDeBaja(UUID ID) {
         Seccion<Disco> seccionD = LeerArchivo();
         List<Disco> discos = seccionD.getElementos();
-        List<Disco> aux = new ArrayList<Disco>();
-        for (var disco : discos){
-            if (disco.getID() != ID){
-                aux.add(disco);
+        List<Disco> aux = new ArrayList<>();
+        int tope = seccionD.getTope();
+        for (int i = 0;i<tope;i++){
+            if (discos.get(i).getID() != ID){
+                aux.add(discos.get(i));
             }
         }
         seccionD.setElementos(aux);

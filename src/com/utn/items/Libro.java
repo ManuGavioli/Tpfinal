@@ -17,8 +17,8 @@ public class Libro extends itemVenta{
 
     //region Constructor
 
-    public Libro(float precio, String nombre, ClasificacionEdad clasificacion, GenerosL genero, String autor, String editorial) {
-        super(precio, nombre, clasificacion);
+    public Libro(float precio, String nombre, ClasificacionEdad clasificacion, GenerosL genero, String autor, String editorial,int stock) {
+        super(precio, nombre, clasificacion,stock);
         Genero = genero;
         Autor = autor;
         Editorial = editorial;
@@ -98,11 +98,9 @@ public class Libro extends itemVenta{
             guardar = new BufferedWriter(new FileWriter(new File("libros.json")));
 
             gson.toJson(datoDeSeccion, seccion, guardar);
-        }catch (IOException e){
+        } catch (Exception e){
             e.printStackTrace();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
+        } finally {
             if(guardar != null){
                 try {
                     guardar.close();
@@ -124,41 +122,45 @@ public class Libro extends itemVenta{
 
             System.out.println("Ingrese El nombre del libro: ");
             String nombre = scanner.nextLine();
+            boolean flag = BuscarItems(nombre);
+            if(!flag){
+                System.out.println("Ingrese el nombre de la editorial: ");
+                String editorial = scanner.nextLine();
 
-            System.out.println("Ingrese el nombre de la editorial: ");
-            String editorial = scanner.nextLine();
+                System.out.println("Ingrese el nombre del/la autor/autora: ");
+                String autor = scanner.nextLine();
 
-            System.out.println("Ingrese el nombre del/la autor/autora: ");
-            String autor = scanner.nextLine();
+                System.out.println("Ingrese el precio del producto: ");
+                float precio = scanner.nextFloat();
 
-            System.out.println("Ingrese el precio del producto: ");
-            float precio = scanner.nextFloat();
+                System.out.println("Ingrese la cantidad de productos en stock");
+                int stock = scanner.nextInt();
 
-            //region ClasificacionPorEdad
-            int Edad;
-            ClasificacionEdad clasEdad = null;
-            do{
-                System.out.println("""
+                //region ClasificacionPorEdad
+                int Edad;
+                ClasificacionEdad clasEdad = null;
+                do{
+                    System.out.println("""
                     Ingrese la clasificacion de edad del libro:\s
                     1 - Niños.
                     2 - Adolecentes.
                     3 - Adultos.
                     """);
-                Edad = scanner.nextInt();
-                switch (Edad) {
-                    case 1 -> clasEdad = ClasificacionEdad.NINIOS;
-                    case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
-                    case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
-                    default -> System.out.println("Opcion no valida. Reintente");
-                }
-            }while(Edad != 1 && Edad != 2 && Edad != 3);
-            //endregion
+                    Edad = scanner.nextInt();
+                    switch (Edad) {
+                        case 1 -> clasEdad = ClasificacionEdad.NINIOS;
+                        case 2 -> clasEdad = ClasificacionEdad.ADOLECENTES;
+                        case 3 -> clasEdad = ClasificacionEdad.ADULTOS;
+                        default -> System.out.println("Opcion no valida. Reintente");
+                    }
+                }while(Edad != 1 && Edad != 2 && Edad != 3);
+                //endregion
 
-            //region ClasificacionPorGenero
-            GenerosL generL = null;
-            int gen;
-            do {
-                System.out.println("""
+                //region ClasificacionPorGenero
+                GenerosL generL = null;
+                int gen;
+                do {
+                    System.out.println("""
                         Ingrese el genero del libro: \s
                         1 - Accion.
                         2 - Aventura.
@@ -170,28 +172,40 @@ public class Libro extends itemVenta{
                         8 - Fantasia.
                         9 - Policial
                         """);
-                gen = scanner.nextInt();
-                switch (gen){
-                    case 1 -> generL = GenerosL.ACCION;
-                    case 2 -> generL = GenerosL.AVENTURA;
-                    case 3 -> generL = GenerosL.ROMANCE;
-                    case 4 -> generL = GenerosL.DRAMA;
-                    case 5 -> generL = GenerosL.POESIA;
-                    case 6 -> generL = GenerosL.MEDIEVAL;
-                    case 7 -> generL = GenerosL.CIENCIA_FICCION;
-                    case 8 -> generL = GenerosL.FANTASIA;
-                    case 9 -> generL = GenerosL.POLICIAL;
-                    default -> System.out.println("Opcion no valida. Reintente");
+                    gen = scanner.nextInt();
+                    switch (gen){
+                        case 1 -> generL = GenerosL.ACCION;
+                        case 2 -> generL = GenerosL.AVENTURA;
+                        case 3 -> generL = GenerosL.ROMANCE;
+                        case 4 -> generL = GenerosL.DRAMA;
+                        case 5 -> generL = GenerosL.POESIA;
+                        case 6 -> generL = GenerosL.MEDIEVAL;
+                        case 7 -> generL = GenerosL.CIENCIA_FICCION;
+                        case 8 -> generL = GenerosL.FANTASIA;
+                        case 9 -> generL = GenerosL.POLICIAL;
+                        default -> System.out.println("Opcion no valida. Reintente");
+                    }
+
+                }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8 && gen != 9);
+                //endregion
+
+                Libro libro = new Libro(precio,nombre,clasEdad,generL,autor,editorial,stock);
+
+                if(seccionLibros.agregarElemento(libro)){
+                    System.out.println("...Se agrego el libro en los elementos de la seccion...");
                 }
-
-            }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8 && gen != 9);
-            //endregion
-
-            Libro libro = new Libro(precio,nombre,clasEdad,generL,autor,editorial);
-
-            if(seccionLibros.agregarElemento(libro)){
-                System.out.println("...Se agrego el libro en los elementos de la seccion...");
+            }else {
+                List<Libro> libros = LeerArchivo().getElementos();
+                Iterator<Libro> iterator = libros.iterator();
+                System.out.println("El elemento : "+nombre+ "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
+                int stock = scanner.nextInt();
+                while (iterator.hasNext()){
+                    if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+                        iterator.next().setStock((this.getStock()+stock));
+                    }
+                }
             }
+
 
             System.out.println("Desea cargar otro libro? s/n");
             control = scanner.next();
@@ -206,28 +220,23 @@ public class Libro extends itemVenta{
     public void MostrarListado() {
         List <Libro> libros = LeerArchivo().getElementos();
 
-        Iterator <Libro> iterator = libros.iterator();
-
-        while (iterator.hasNext()){
-            System.out.println(iterator.next());
+        for (var libro:libros){
+            System.out.println(libro);
         }
     }
 
     @Override
-    public void BuscarItems() {
+    public boolean BuscarItems(String nombre) {
         boolean flag = false;
         List <Libro> libros = LeerArchivo().getElementos();
         Iterator <Libro> iterator = libros.iterator();
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese el nombre del libro, autor o editorial de este: \s");
-        String dato = scanner.nextLine();
-
-        while (iterator.hasNext()){
-            if(iterator.next().getNombre() == dato || iterator.next().getAutor() == dato || iterator.next().getEditorial() == dato){
-                System.out.println(iterator.next());
+        while (iterator.hasNext() && !flag){
+            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+                flag = true;
             }
         }
+        return flag;
     }
 
     @Override
@@ -249,10 +258,11 @@ public class Libro extends itemVenta{
     public void DarDeBaja(UUID ID) {
         Seccion<Libro> seccionL = LeerArchivo();
         List<Libro> libros = seccionL.getElementos();
-        List<Libro> aux = new ArrayList<Libro>();
-        for (var libro : libros){
-            if (libro.getID() != ID){
-                aux.add(libro);
+        List<Libro> aux = new ArrayList<>();
+        int tope = seccionL.getTope();
+        for (int i = 0;i<tope;i++){
+            if (libros.get(i).getID() != ID){
+                aux.add(libros.get(i));
             }
         }
         seccionL.setElementos(aux);
