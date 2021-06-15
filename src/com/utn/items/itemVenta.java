@@ -71,6 +71,8 @@ public abstract class itemVenta {
 
     public abstract void CrearArchivo();
 
+    public abstract void VerificarStock(String nombre);
+
     public abstract Seccion LeerArchivo();
 
     public abstract void EscribirArchivo(Seccion datoDeSeccion);

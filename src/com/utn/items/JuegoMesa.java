@@ -49,6 +49,24 @@ public class JuegoMesa extends itemVenta{
     }
 
     @Override
+    public void VerificarStock(String nombre) {
+        List <JuegoMesa> juegos = LeerArchivo().getElementos();
+        Iterator <JuegoMesa> iterator = juegos.iterator();
+
+        while (iterator.hasNext()){
+            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+                if(iterator.next().getStock()<=0){
+                    System.out.println("Las unidades de este produto se encuentran agotadas");
+                }else{
+                    System.out.println("Quedan en deposito "+iterator.next().getStock()+" unidades de este producto");
+                }
+
+            }
+        }
+    }
+
+
+    @Override
     public Seccion LeerArchivo() {
         Seccion<JuegoMesa> aux = new Seccion<>(50);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
