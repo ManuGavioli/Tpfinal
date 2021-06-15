@@ -62,17 +62,20 @@ public class Disco extends itemVenta{
     public void setFechaLanzamiento(LocalDateTime fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
     //endregion
 
-    public void AñadirCanciones(ArrayList <String> canciones){
+    public ArrayList <String> AñadirCanciones(){
+        ArrayList <String> canciones = new ArrayList<>();
         String cancion;
-        Scanner scanner = new Scanner(System.in);
         String control;
         do {
+            Scanner scanner = new Scanner(System.in);
             System.out.println("Ingrese una cancion del disco: ");
             cancion = scanner.nextLine();
             canciones.add(cancion);
+
             System.out.println("Desea cargar otra cancion? s/n");
             control = scanner.next();
         }while(control.equalsIgnoreCase("S"));
+        return canciones;
     }
 
     @Override
@@ -97,7 +100,9 @@ public class Disco extends itemVenta{
         try{
             reader = new BufferedReader(new FileReader(new File("discos.json")));
             aux = gson.fromJson(reader,seccion);
-        }catch (IOException e){
+        } catch (FileNotFoundException e){
+            return aux;
+        } catch (IOException e){
             e.printStackTrace();
         }finally {
             try{
@@ -157,9 +162,7 @@ public class Disco extends itemVenta{
                 System.out.println("Ingrese la cantidad de productos en stock: ");
                 int stock = scanner.nextInt();
 
-                AñadirCanciones(canciones);
-
-                //todo solucionar problema de soloBanda(no para en el scanner)
+                canciones = AñadirCanciones();
 
                 //region ClasificacionPorEdad
                 int Edad;
@@ -212,7 +215,9 @@ public class Disco extends itemVenta{
 
                 DateTimeFormatter formatterOfPatterns = DateTimeFormatter.ofPattern("d/M/u , h:m:s a");
                 System.out.println("Ingrese la fecha de lanzamiento del disco (Dia/Mes/Año): ");
-                LocalDateTime fecha = LocalDateTime.parse(scanner.nextLine(),formatterOfPatterns);
+                String fechaAux = scanner.nextLine();
+                LocalDateTime fecha = LocalDateTime.parse(fechaAux,formatterOfPatterns);
+                //todo Arreglar localdatetime parse error
 
                 Disco disco = new Disco(precio,nombre,clasEdad,soloBanda,canciones,genderD,fecha,stock);
                 if(seccionDiscos.agregarElemento(disco)){

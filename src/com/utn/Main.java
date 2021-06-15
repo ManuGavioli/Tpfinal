@@ -1,11 +1,9 @@
 package com.utn;
 
-import com.utn.items.Disco;
-import com.utn.items.JuegoMesa;
-import com.utn.items.Libro;
-import com.utn.items.itemVenta;
+import com.utn.items.*;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {

@@ -58,15 +58,17 @@ public class JuegoMesa extends itemVenta{
         try{
             reader = new BufferedReader(new FileReader("juegosDeMesa.json"));
             aux = gson.fromJson(reader,seccion);
-        }catch (IOException e){
+        } catch (FileNotFoundException e){
+            return aux;
+        } catch (IOException e){
             e.printStackTrace();
-        }finally {
-            try{
-                if (reader != null){
+        } finally {
+            if (reader != null){
+                try{
                     reader.close();
+                }catch (IOException e){
+                    e.printStackTrace();
                 }
-            }catch (IOException e){
-                e.printStackTrace();
             }
         }
         return aux;
@@ -78,7 +80,7 @@ public class JuegoMesa extends itemVenta{
         Type seccion = new TypeToken<Seccion<JuegoMesa>>(){}.getType();
         BufferedWriter guardar = null;
 
-        try{
+        try {
             guardar = new BufferedWriter(new FileWriter("juegosDeMesa.json"));
 
             gson.toJson(datoDeSeccion, seccion, guardar);
@@ -100,6 +102,7 @@ public class JuegoMesa extends itemVenta{
         //Pide al staff que cargue un item
         String control = ".";
         Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
+
 
         do{
             Scanner scanner= new Scanner(System.in);
@@ -165,24 +168,24 @@ public class JuegoMesa extends itemVenta{
                 if(juegosDeMesa.agregarElemento(juego)){
                     System.out.println("...Se agrego el juego en los elementos de la seccion...");
                 }
-
-                System.out.println("\nDesea cargar otro juego? s/n");
-                control = scanner.next();
             }else{
                 List<JuegoMesa> juegos = LeerArchivo().getElementos();
                 Iterator<JuegoMesa> iterator = juegos.iterator();
-                System.out.println("El elemento : "+nombre+ "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
+                System.out.println("El elemento : " + nombre + " ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
                 int stock = scanner.nextInt();
                 while (iterator.hasNext()){
-                    if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
-                        iterator.next().setStock((this.getStock()+stock));
+                    JuegoMesa juego = iterator.next();
+                    if(juego.getNombre().equalsIgnoreCase(nombre)){
+                        stock += juego.getStock();
+                        juego.setStock(stock);
                     }
                 }
+                juegosDeMesa.setElementos(juegos);
             }
-
+            System.out.println("\nDesea cargar otro juego? s/n");
+            control = scanner.next();
+            EscribirArchivo(juegosDeMesa);
         }while(control.equalsIgnoreCase("S"));
-
-        EscribirArchivo(juegosDeMesa);
     }
 
     @Override
@@ -208,32 +211,57 @@ public class JuegoMesa extends itemVenta{
         return flag;
     }
 
+    //todo Cambiar para que pida por parametros el nombre, en vez de UUID
     @Override
     public void Venta(UUID ID) {
-        Seccion<JuegoMesa> seccionJM = LeerArchivo();
-        List<JuegoMesa> juegos = seccionJM.getElementos();
-        int tope = seccionJM.getTope();
+        Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
+        List<JuegoMesa> seccionJM = LeerArchivo().getElementos();
+        Iterator<JuegoMesa> iterator = seccionJM.iterator();
 
-        for (int i =0 ; i<tope;i++){
-            if (juegos.get(i).getID() == ID){
-                setStock((this.getStock()-1));
+        while (iterator.hasNext()){
+            JuegoMesa juego = iterator.next();
+            if(juego.getID().equals(ID)){
+                int stock = juego.getStock();
+                stock--;
+                juego.setStock(stock);
             }
         }
-        seccionJM.setElementos(juegos);
+        juegosDeMesa.setElementos(seccionJM);
+        EscribirArchivo(juegosDeMesa);
     }
 
+    //todo Cambiar para que pida por parametros el nombre, en vez de UUID
     @Override
     public void DarDeBaja(UUID ID) {
         Seccion<JuegoMesa> seccionJM = LeerArchivo();
         List<JuegoMesa> juegos = seccionJM.getElementos();
+
+        Iterator<JuegoMesa> iterator = juegos.iterator();
         List<JuegoMesa> aux = new ArrayList<>();
-        int tope = seccionJM.getTope();
-        for (int i = 0;i<tope;i++){
-            if (juegos.get(i).getID() != ID){
-                aux.add(juegos.get(i));
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto: ");
+        int stockABajar = scanner.nextInt();
+
+        while(iterator.hasNext()){
+            JuegoMesa juego = iterator.next();
+            if (juego.getID().equals(ID)){
+                if(stockABajar >= juego.getStock()){
+                    for (int i = 0;i<juegos.size();i++){
+                        if (!juegos.get(i).getID().equals(ID)){
+                            aux.add(juegos.get(i));
+                        }
+                    }
+                    seccionJM.setElementos(aux);
+                }else{
+                    int stock = juego.getStock();
+                    stock -= stockABajar;
+                    juego.setStock(stock);
+                    seccionJM.setElementos(juegos);
+                }
             }
         }
-        seccionJM.setElementos(aux);
+        EscribirArchivo(seccionJM);
     }
 
     //region toString
