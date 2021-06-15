@@ -404,7 +404,6 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    //FIJARSE SI ESTO FUNCIONA
     private static void Buscar(int caso) throws  NumException{
         Scanner scanner = new Scanner(System.in);
         Libro libro = new Libro();
@@ -417,17 +416,23 @@ public class Cliente implements Menu , Serializable {
                 case 1  :
                     System.out.println("Ingrese el nombre del Libro que desea buscar: ");
                     String nombre = scanner.nextLine();
-                    libro.BuscarItems(nombre);
+                    if (!libro.BuscarItems(nombre)){
+                        System.out.println("Ese nombre no coincide con un libro en el archivo...");
+                    }
                     break;
                 case 2  :
                     System.out.println("Ingrese el nombre del Juego de mesa que desea buscar: ");
                     String nombre2 = scanner.nextLine();
-                    juego.BuscarItems(nombre2);
+                    if (!juego.BuscarItems(nombre2)){
+                        System.out.println("Ese nombre no coincide con un juego de mesa en el archivo...");
+                    }
                     break;
                 case 3  :
                     System.out.println("Ingrese el nombre del Disco que desea buscar: ");
                     String nombre3 = scanner.nextLine();
-                    ds.BuscarItems(nombre3);
+                    if (!ds.BuscarItems(nombre3)){
+                        System.out.println("Ese nombre no coincide con un disco en el archivo...");
+                    }
                     break;
                 default :System.out.println("...");
 
