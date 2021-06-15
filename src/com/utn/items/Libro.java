@@ -3,6 +3,7 @@ package com.utn.items;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.utn.Menu.Usuarios.Cliente;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosL;
 
@@ -17,7 +18,7 @@ public class Libro extends itemVenta{
 
     //region Constructor
 
-    public Libro(float precio, String nombre, ClasificacionEdad clasificacion, GenerosL genero, String autor, String editorial,int stock) {
+    public Libro(double precio, String nombre, ClasificacionEdad clasificacion, GenerosL genero, String autor, String editorial,int stock) {
         super(precio, nombre, clasificacion,stock);
         Genero = genero;
         Autor = autor;
@@ -159,7 +160,7 @@ public class Libro extends itemVenta{
                 String autor = scanner.nextLine();
 
                 System.out.println("Ingrese el precio del producto: ");
-                float precio = scanner.nextFloat();
+                double precio = scanner.nextDouble();
 
                 System.out.println("Ingrese la cantidad de productos en stock");
                 int stock = scanner.nextInt();
@@ -225,7 +226,7 @@ public class Libro extends itemVenta{
             }else {
                 List<Libro> libros = LeerArchivo().getElementos();
                 Iterator<Libro> iterator = libros.iterator();
-                System.out.println("El elemento : "+nombre+ "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
+                System.out.println("El elemento : "+nombre+ " ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
                 int stock = scanner.nextInt();
 
                 while (iterator.hasNext()){
@@ -259,7 +260,9 @@ public class Libro extends itemVenta{
         Iterator <Libro> iterator = libros.iterator();
 
         while (iterator.hasNext() && !flag){
-            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+            Libro libro = iterator.next();
+            if(libro.getNombre().equalsIgnoreCase(nombre)){
+                System.out.println(libro);
                 flag = true;
             }
         }
@@ -267,25 +270,59 @@ public class Libro extends itemVenta{
     }
 
     @Override
-    public void Venta() {
+    public void Venta(String name) {
+
+        boolean flag = false;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Escriba el nombre del libro a comprar");
+        Seccion<Libro> libros = new Seccion<>(50);
+
+        HashMap<Integer, Cliente> map= Cliente.Leer();
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
+        List<Libro> seccionL = LeerArchivo().getElementos();
+        Iterator <Libro> iterator = seccionL.iterator();
+
+        System.out.println("Escriba el nombre del libro a comprar: ");
         String nombre = scanner.nextLine();
 
-        Seccion<Libro> seccionL = LeerArchivo();
-        List<Libro> libros = seccionL.getElementos();
-        Iterator<Libro> iterator = seccionL.iterator();
+        while(mapIterator.hasNext() && !flag){
+            Cliente client = mapIterator.next().getValue();
 
-        while (iterator.hasNext()){
-            Libro libro = iterator.next();
-            if (libro.getNombre().equalsIgnoreCase(nombre)){
-                int stock = libro.getStock();
-                stock--;
-                libro.setStock(stock);
+            if(client.getNombreUsuario().equalsIgnoreCase(name)) {
+                while (iterator.hasNext()) {
+                    Libro libro = iterator.next();
+                    if (libro.getNombre().equalsIgnoreCase(nombre)) {
+                        if (client.getCartera() >= libro.getPrecio()) {
+                            if (libro.getStock() >= 1) {
+                                int stock = libro.getStock();
+                                stock--;
+                                libro.setStock(stock);
+
+                                double valor = (client.getCartera() - libro.getPrecio());
+                                client.setCartera(valor);
+                                System.out.println("Gracias por su compra :) ");
+                            } else {
+                                System.out.println("No queda stock del producto...");
+
+                            }
+
+                        } else {
+                            System.out.println("La cartera no posee el saldo necesario para comprar el producto...");
+                        }
+                        flag = true;
+
+                    }
+                }
             }
+
         }
-        seccionL.setElementos(libros);
-        EscribirArchivo(seccionL);
+        if(!flag){
+            System.out.println("El nombre del producto no se encuentra...");
+        }
+
+        Cliente.CargarMapaArchivo(map);
+        libros.setElementos(seccionL);
+        EscribirArchivo(libros);
     }
 
     @Override
@@ -302,7 +339,9 @@ public class Libro extends itemVenta{
         System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto:");
         int stockABajar = scanner.nextInt();
 
-        while (iterator.hasNext()){
+        boolean flag = false;
+
+        while (iterator.hasNext() && !flag){
             Libro libro = iterator.next();
             if (libro.getNombre().equalsIgnoreCase(nombre)){
                 if(stockABajar >= libro.getStock()){
@@ -318,12 +357,15 @@ public class Libro extends itemVenta{
                     libro.setStock(stock);
                     seccionL.setElementos(libros);
                 }
+                System.out.println("Se dio de baja exitosamente");
+                flag = true;
             }
+        }
+        if(!flag){
+            System.out.println("El nombre del producto no se encuentra en el archivo...");
         }
         EscribirArchivo(seccionL);
     }
-
-
 
     //region toString
     @Override

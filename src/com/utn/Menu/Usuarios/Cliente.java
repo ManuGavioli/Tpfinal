@@ -2,7 +2,9 @@ package com.utn.Menu.Usuarios;
 
 import com.utn.Menu.Menu;
 import com.utn.Menu.NumException;
-
+import com.utn.items.Disco;
+import com.utn.items.JuegoMesa;
+import com.utn.items.Libro;
 
 
 import java.io.*;
@@ -18,7 +20,6 @@ public class Cliente implements Menu , Serializable {
 
     @Serial
     private static final long serialVersionUID = 13221L;
-
 
     ///region Constructores
     public Cliente() { }
@@ -48,7 +49,6 @@ public class Cliente implements Menu , Serializable {
     public void setCartera(double cartera) { this.cartera = cartera; }
     ///endregion
 
-
     public static void MenuInic(){
         Cliente cl = new Cliente();
         cl.Menu();
@@ -56,7 +56,7 @@ public class Cliente implements Menu , Serializable {
 
     ///region Funciones archivo
 
-    private static  void CargarMapaArchivo(HashMap<Integer,Cliente> map){
+    public static  void CargarMapaArchivo(HashMap<Integer,Cliente> map){
         try{
 
          FileOutputStream fileOutputStream = new FileOutputStream("Clientes.json");
@@ -84,7 +84,7 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    private static HashMap Leer(){
+    public static HashMap Leer(){
 
         HashMap<Integer,Cliente> map = new HashMap<>();
         try{
@@ -293,7 +293,10 @@ public class Cliente implements Menu , Serializable {
                     }
 
                 }while(!control.equalsIgnoreCase("S") && !control.equalsIgnoreCase("N"));
+            }else{
+                control ="n";
             }
+
 
         }while(control.equalsIgnoreCase("S"));
     }
@@ -380,16 +383,17 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    //TODO ACA FALTA METER FUNCIONES
     private static void Vender(int caso,String name) throws  NumException{
-
+        Libro libro = new Libro();
+        JuegoMesa juego = new JuegoMesa();
+        Disco ds = new Disco();
         if((caso>=1 && caso<=3) || caso==0){
 
             switch (caso) {
                 ///FALTA CORROBORAR SI SEGUN EL PRECIO Y LA CARTERA SE PUEDE COMPRAR EL PRODUCTO...
-                case 1 -> System.out.println("ACA IRIA DE LIBRO");
-                case 2 -> System.out.println("ACA IRIA DE JM");
-                case 3 -> System.out.println("ACA IRIA DE DS");
+                case 1 -> libro.Venta(name);
+                case 2 -> juego.Venta(name);
+                case 3 -> ds.Venta(name);
                 default -> System.out.println("...");
 
             }
@@ -400,16 +404,32 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    //TODO ACA FALTA METER FUNCIONES
+    //FIJARSE SI ESTO FUNCIONA
     private static void Buscar(int caso) throws  NumException{
+        Scanner scanner = new Scanner(System.in);
+        Libro libro = new Libro();
+        JuegoMesa juego = new JuegoMesa();
+        Disco ds = new Disco();
 
         if((caso>=1 && caso<=3) || caso==0){
 
             switch (caso) {
-                case 1 -> System.out.println("ACA IRIA DE LIBRO");
-                case 2 -> System.out.println("ACA IRIA DE JM");
-                case 3 -> System.out.println("ACA IRIA DE DS");
-                default -> System.out.println("...");
+                case 1  :
+                    System.out.println("Ingrese el nombre del Libro que desea buscar: ");
+                    String nombre = scanner.nextLine();
+                    libro.BuscarItems(nombre);
+                    break;
+                case 2  :
+                    System.out.println("Ingrese el nombre del Juego de mesa que desea buscar: ");
+                    String nombre2 = scanner.nextLine();
+                    juego.BuscarItems(nombre2);
+                    break;
+                case 3  :
+                    System.out.println("Ingrese el nombre del Disco que desea buscar: ");
+                    String nombre3 = scanner.nextLine();
+                    ds.BuscarItems(nombre3);
+                    break;
+                default :System.out.println("...");
 
             }
         }else{
@@ -419,15 +439,18 @@ public class Cliente implements Menu , Serializable {
 
     }
 
-    //TODO ACA FALTA METER FUNCIONES
     private static void Listado(int caso) throws  NumException{
+        Libro libro = new Libro();
+        JuegoMesa juego = new JuegoMesa();
+        Disco ds = new Disco();
+
 
         if((caso>=1 && caso<=3) || caso==0){
 
             switch (caso) {
-                case 1 -> System.out.println("ACA IRIA DE LIBRO");
-                case 2 -> System.out.println("ACA IRIA DE JM");
-                case 3 -> System.out.println("ACA IRIA DE DS");
+                case 1 -> libro.MostrarListado();
+                case 2 -> juego.MostrarListado();
+                case 3 -> ds.MostrarListado();
                 default -> System.out.println("...");
 
             }
@@ -444,7 +467,7 @@ public class Cliente implements Menu , Serializable {
     private static void Venta(String name){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese el tipo de producto que desea buscar: ");
-        System.out.println("1.Libro\n2.Juego de Mesa\nDisco");
+        System.out.println("1.Libro\n2.Juego de Mesa\n3.Disco");
         int caso = scanner.nextInt();
 
         try {
@@ -460,7 +483,7 @@ public class Cliente implements Menu , Serializable {
     private static void BuscarItem(){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese el tipo de producto que desea buscar: ");
-        System.out.println("1.Libro\n2.Juego de Mesa\nDisco");
+        System.out.println("1.Libro\n2.Juego de Mesa\n3.Disco");
         int caso = scanner.nextInt();
 
         try {
@@ -476,7 +499,7 @@ public class Cliente implements Menu , Serializable {
     private static void Lista(){
         Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese el tipo de producto que desea buscar: ");
-        System.out.println("1.Libro\n2.Juego de Mesa\nDisco");
+        System.out.println("1.Libro\n2.Juego de Mesa\n3.Disco");
         int caso = scanner.nextInt();
 
         try {
@@ -494,7 +517,7 @@ public class Cliente implements Menu , Serializable {
         String control;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Desea relizar otra operacion??");
+        System.out.println("Desea realizar otra operacion??");
         System.out.println("S/N");
         control = scanner.next();
 

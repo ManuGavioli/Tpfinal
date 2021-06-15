@@ -3,6 +3,7 @@ package com.utn.items;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.utn.Menu.Usuarios.Cliente;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosJM;
 import java.io.*;
@@ -14,7 +15,7 @@ public class JuegoMesa extends itemVenta{
     private GenerosJM genero;
 
     //region Constructores
-    public JuegoMesa(float precio, String nombre, ClasificacionEdad clasificacion, GenerosJM genero,int stock) {
+    public JuegoMesa(double precio, String nombre, ClasificacionEdad clasificacion, GenerosJM genero,int stock) {
         super(precio, nombre, clasificacion,stock);
         this.genero = genero;
     }
@@ -138,7 +139,7 @@ public class JuegoMesa extends itemVenta{
 
             if(!flag){
                 System.out.println("Ingrese el precio del juego de mesa: ");
-                float numero = scanner.nextFloat();
+                double numero = scanner.nextDouble();
 
                 System.out.println("Ingrese la cantidad de productos en stock: ");
                 int stock = scanner.nextInt();
@@ -228,7 +229,9 @@ public class JuegoMesa extends itemVenta{
         Iterator <JuegoMesa> iterator = juegos.iterator();
 
         while (iterator.hasNext() && !flag){
-            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+            JuegoMesa juego = iterator.next();
+            if(juego.getNombre().equalsIgnoreCase(nombre)){
+                System.out.println(juego);
                 flag = true;
             }
         }
@@ -236,25 +239,59 @@ public class JuegoMesa extends itemVenta{
     }
 
     @Override
-    public void Venta() {
+    public void Venta(String name) {
+
+        boolean flag = false;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Escriba el nombre del juego de mesa a comprar");
+        Seccion<JuegoMesa> juegos = new Seccion<>(50);
+
+        HashMap<Integer, Cliente> map= Cliente.Leer();
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
+        List<JuegoMesa> seccionJM = LeerArchivo().getElementos();
+        Iterator <JuegoMesa> iterator = seccionJM.iterator();
+
+        System.out.println("Escriba el nombre del libro a comprar: ");
         String nombre = scanner.nextLine();
 
-        Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
-        List<JuegoMesa> seccionJM = LeerArchivo().getElementos();
-        Iterator<JuegoMesa> iterator = seccionJM.iterator();
+        while(mapIterator.hasNext() && !flag){
+            Cliente client = mapIterator.next().getValue();
 
-        while (iterator.hasNext()){
-            JuegoMesa juego = iterator.next();
-            if(juego.getNombre().equalsIgnoreCase(nombre)){
-                int stock = juego.getStock();
-                stock--;
-                juego.setStock(stock);
+            if(client.getNombreUsuario().equalsIgnoreCase(name)) {
+                while (iterator.hasNext()) {
+                    JuegoMesa juego = iterator.next();
+                    if (juego.getNombre().equalsIgnoreCase(nombre)) {
+                        if (client.getCartera() >= juego.getPrecio()) {
+                            if (juego.getStock() >= 1) {
+                                int stock = juego.getStock();
+                                stock--;
+                                juego.setStock(stock);
+
+                                double valor = (client.getCartera() - juego.getPrecio());
+                                client.setCartera(valor);
+                                System.out.println("Gracias por su compra :) ");
+                            } else {
+                                System.out.println("No queda stock del producto...");
+
+                            }
+
+                        } else {
+                            System.out.println("La cartera no posee el saldo necesario para comprar el producto...");
+                        }
+                        flag = true;
+
+                    }
+                }
             }
+
         }
-        juegosDeMesa.setElementos(seccionJM);
-        EscribirArchivo(juegosDeMesa);
+        if(!flag){
+            System.out.println("El nombre del producto no se encuentra...");
+        }
+
+        Cliente.CargarMapaArchivo(map);
+        juegos.setElementos(seccionJM);
+        EscribirArchivo(juegos);
     }
 
     @Override
@@ -272,7 +309,9 @@ public class JuegoMesa extends itemVenta{
         System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto: ");
         int stockABajar = scanner.nextInt();
 
-        while(iterator.hasNext()){
+        boolean flag = false;
+
+        while(iterator.hasNext() && !flag){
             JuegoMesa juego = iterator.next();
             if (juego.getNombre().equalsIgnoreCase(nombre)){
                 if(stockABajar >= juego.getStock()){
@@ -288,7 +327,12 @@ public class JuegoMesa extends itemVenta{
                     juego.setStock(stock);
                     seccionJM.setElementos(juegos);
                 }
+                System.out.println("Se dio de baja exitosamente");
+                flag = true;
             }
+        }
+        if(!flag){
+            System.out.println("El nombre del producto no se encuentra en el archivo...");
         }
         EscribirArchivo(seccionJM);
     }

@@ -3,15 +3,13 @@ package com.utn.items;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.utn.Menu.Usuarios.Cliente;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosD;
 
-import javax.swing.text.DateFormatter;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Disco extends itemVenta{
@@ -29,14 +27,14 @@ public class Disco extends itemVenta{
         FechaLanzamiento = fechaLanzamiento;
     }
 
-    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento,int stock) {
+    public Disco(double precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento,int stock) {
         super(precio, nombre, clasificacion,stock);
         Solo_Banda = solo_Banda;
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
     }
 
-    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda,
+    public Disco(double precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda,
                  ArrayList<String> canciones, GenerosD genero, LocalDate fechaLanzamiento,int stock) {
         super(precio, nombre, clasificacion,stock);
         Solo_Banda = solo_Banda;
@@ -185,7 +183,7 @@ public class Disco extends itemVenta{
                 String soloBanda = scanner.nextLine();
 
                 System.out.println("Ingrese el precio del producto: ");
-                float precio = scanner.nextFloat();
+                double precio = scanner.nextDouble();
 
                 System.out.println("Ingrese la cantidad de productos en stock: ");
                 int stock = scanner.nextInt();
@@ -253,7 +251,7 @@ public class Disco extends itemVenta{
             }else {
                 List<Disco> discos = LeerArchivo().getElementos();
                 Iterator<Disco> iterator = discos.iterator();
-                System.out.println("El elemento : " + nombre + "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
+                System.out.println("El elemento : " + nombre + " ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
                 int stock = scanner.nextInt();
                 while (iterator.hasNext()) {
                     Disco disco = iterator.next();
@@ -290,7 +288,9 @@ public class Disco extends itemVenta{
         Iterator <Disco> iterator = discos.iterator();
 
         while (iterator.hasNext() && !flag){
-            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
+            Disco disco = iterator.next();
+            if(disco.getNombre().equalsIgnoreCase(nombre)){
+                System.out.println(disco);
                 flag = true;
             }
         }
@@ -298,23 +298,56 @@ public class Disco extends itemVenta{
     }
 
     @Override
-    public void Venta() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Escriba el nombre del disco a comprar");
-        String nombre = scanner.nextLine();
+    public void Venta(String name) {
 
+        boolean flag = false;
+        Scanner scanner = new Scanner(System.in);
         Seccion<Disco> discos = new Seccion<>(50);
+
+        HashMap<Integer, Cliente> map= Cliente.Leer();
+        Iterator<Map.Entry<Integer,Cliente>> mapIterator = map.entrySet().iterator();
+
         List<Disco> seccionD = LeerArchivo().getElementos();
         Iterator <Disco> iterator = seccionD.iterator();
 
-        while (iterator.hasNext()){
-            Disco disco =iterator.next();
-            if(disco.getNombre().equalsIgnoreCase(nombre)){
-                int stock = disco.getStock();
-                stock--;
-                disco.setStock(stock);
+        System.out.println("Escriba el nombre del disco a comprar: ");
+        String nombre = scanner.nextLine();
+
+        while(mapIterator.hasNext() && !flag){
+            Cliente client = mapIterator.next().getValue();
+
+            if(client.getNombreUsuario().equalsIgnoreCase(name)) {
+                while (iterator.hasNext()) {
+                    Disco disco = iterator.next();
+                    if (disco.getNombre().equalsIgnoreCase(nombre)) {
+                        if (client.getCartera() >= disco.getPrecio()) {
+                            if (disco.getStock() >= 1) {
+                                int stock = disco.getStock();
+                                stock--;
+                                disco.setStock(stock);
+
+                                double valor = (client.getCartera() - disco.getPrecio());
+                                client.setCartera(valor);
+                                System.out.println("Gracias por su compra :) ");
+                            } else {
+                                System.out.println("No queda stock del producto...");
+
+                            }
+
+                        } else {
+                            System.out.println("La cartera no posee el saldo necesario para comprar el producto...");
+                        }
+                        flag = true;
+
+                    }
+                }
             }
+
         }
+        if(!flag){
+            System.out.println("El nombre del producto no se encuentra...");
+        }
+        Cliente.CargarMapaArchivo(map);
         discos.setElementos(seccionD);
         EscribirArchivo(discos);
     }
@@ -334,7 +367,9 @@ public class Disco extends itemVenta{
         System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto: ");
         int stockABajar = scanner.nextInt();
 
-        while (iterator.hasNext()){
+        boolean flag = false;
+
+        while (iterator.hasNext() && !flag){
             Disco disco = iterator.next();
             if(disco.getNombre().equalsIgnoreCase(nombre)){
                 if (stockABajar >= disco.getStock()){
@@ -350,7 +385,12 @@ public class Disco extends itemVenta{
                     disco.setStock(stock);
                     seccionD.setElementos(discos);
                 }
+                System.out.println("Se dio de baja exitosamente");
+                flag = true;
             }
+        }
+        if(!flag){
+            System.out.println("El nombre del producto no se encuentra en el archivo...");
         }
         EscribirArchivo(seccionD);
     }
