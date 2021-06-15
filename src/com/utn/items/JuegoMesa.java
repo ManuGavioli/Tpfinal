@@ -103,13 +103,11 @@ public class JuegoMesa extends itemVenta{
         String control = ".";
         Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
 
-
         do{
-            Scanner scanner= new Scanner(System.in);
 
+            Scanner scanner= new Scanner(System.in);
             System.out.println("Ingrese el nombre del juego de mesa: ");
             String nombre = scanner.nextLine();
-
             boolean flag = BuscarItems(nombre);
 
             if(!flag){
@@ -211,16 +209,15 @@ public class JuegoMesa extends itemVenta{
         return flag;
     }
 
-    //todo Cambiar para que pida por parametros el nombre, en vez de UUID
     @Override
-    public void Venta(UUID ID) {
+    public void Venta(String nombre) {
         Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
         List<JuegoMesa> seccionJM = LeerArchivo().getElementos();
         Iterator<JuegoMesa> iterator = seccionJM.iterator();
 
         while (iterator.hasNext()){
             JuegoMesa juego = iterator.next();
-            if(juego.getID().equals(ID)){
+            if(juego.getNombre().equalsIgnoreCase(nombre)){
                 int stock = juego.getStock();
                 stock--;
                 juego.setStock(stock);
@@ -230,9 +227,8 @@ public class JuegoMesa extends itemVenta{
         EscribirArchivo(juegosDeMesa);
     }
 
-    //todo Cambiar para que pida por parametros el nombre, en vez de UUID
     @Override
-    public void DarDeBaja(UUID ID) {
+    public void DarDeBaja(String nombre) {
         Seccion<JuegoMesa> seccionJM = LeerArchivo();
         List<JuegoMesa> juegos = seccionJM.getElementos();
 
@@ -245,10 +241,10 @@ public class JuegoMesa extends itemVenta{
 
         while(iterator.hasNext()){
             JuegoMesa juego = iterator.next();
-            if (juego.getID().equals(ID)){
+            if (juego.getNombre().equalsIgnoreCase(nombre)){
                 if(stockABajar >= juego.getStock()){
                     for (int i = 0;i<juegos.size();i++){
-                        if (!juegos.get(i).getID().equals(ID)){
+                        if (!juegos.get(i).getNombre().equalsIgnoreCase(nombre)){
                             aux.add(juegos.get(i));
                         }
                     }

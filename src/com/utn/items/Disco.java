@@ -229,18 +229,21 @@ public class Disco extends itemVenta{
                 System.out.println("El elemento : " + nombre + "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
                 int stock = scanner.nextInt();
                 while (iterator.hasNext()) {
-                    if (iterator.next().getNombre().equalsIgnoreCase(nombre)) {
-                        iterator.next().setStock((this.getStock() + stock));
+                    Disco disco = iterator.next();
+                    if (disco.getNombre().equalsIgnoreCase(nombre)) {
+                        stock += disco.getStock();
+                        disco.setStock(stock);
                     }
                 }
+                seccionDiscos.setElementos(discos);
             }
 
 
             System.out.println("Desea cargar otro disco? s/n");
             control = scanner.next();
-
+            EscribirArchivo(seccionDiscos);
         }while (control.equalsIgnoreCase("S"));
-        EscribirArchivo(seccionDiscos);
+
 
     }
 
@@ -268,33 +271,54 @@ public class Disco extends itemVenta{
     }
 
     @Override
-    public void Venta(UUID ID) {
-        Seccion<Disco> seccionD = LeerArchivo();
-        List<Disco> discos = seccionD.getElementos();
+    public void Venta(String nombre) {
+        Seccion<Disco> seccionD = new Seccion<>(50);
+        List<Disco> discos = LeerArchivo().getElementos();
+        Iterator <Disco> iterator = seccionD.iterator();
 
-        for (var disco : discos){
-            if (disco.getID() == ID){
+        while (iterator.hasNext()){
+            Disco disco =iterator.next();
+            if(disco.getNombre().equalsIgnoreCase(nombre)){
                 int stock = disco.getStock();
-                disco.setStock(stock-1);
+                stock--;
+                disco.setStock(stock);
             }
         }
         seccionD.setElementos(discos);
-
-
+        EscribirArchivo(seccionD);
     }
 
     @Override
-    public void DarDeBaja(UUID ID) {
+    public void DarDeBaja(String nombre) {
         Seccion<Disco> seccionD = LeerArchivo();
         List<Disco> discos = seccionD.getElementos();
+
+        Iterator <Disco> iterator = discos.iterator();
         List<Disco> aux = new ArrayList<>();
-        int tope = seccionD.getTope();
-        for (int i = 0;i<tope;i++){
-            if (discos.get(i).getID() != ID){
-                aux.add(discos.get(i));
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto: ");
+        int stockABajar = scanner.nextInt();
+
+        while (iterator.hasNext()){
+            Disco disco = iterator.next();
+            if(disco.getNombre().equalsIgnoreCase(nombre)){
+                if (stockABajar >= disco.getStock()){
+                    for (int i = 0;i<discos.size();i++){
+                        if (!discos.get(i).getNombre().equalsIgnoreCase(nombre)){
+                            aux.add(discos.get(i));
+                        }
+                    }
+                    seccionD.setElementos(aux);
+                }else {
+                    int stock = disco.getStock();
+                    stock -=stockABajar;
+                    disco.setStock(stock);
+                    seccionD.setElementos(discos);
+                }
             }
         }
-        seccionD.setElementos(aux);
+        EscribirArchivo(seccionD);
     }
 
     //region toString

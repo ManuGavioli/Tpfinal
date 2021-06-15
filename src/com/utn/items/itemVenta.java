@@ -81,9 +81,9 @@ public abstract class itemVenta {
 
     public abstract boolean BuscarItems(String nombre);
 
-    public abstract void Venta(UUID ID);
+    public abstract void Venta(String nombre);
 
-    public abstract void DarDeBaja(UUID ID);
+    public abstract void DarDeBaja(String nombre);
 
     @Override
     public String toString() {

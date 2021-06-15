@@ -119,10 +119,10 @@ public class Libro extends itemVenta{
 
         do {
             Scanner scanner = new Scanner (System.in);
-
             System.out.println("Ingrese El nombre del libro: ");
             String nombre = scanner.nextLine();
             boolean flag = BuscarItems(nombre);
+
             if(!flag){
                 System.out.println("Ingrese el nombre de la editorial: ");
                 String editorial = scanner.nextLine();
@@ -199,20 +199,20 @@ public class Libro extends itemVenta{
                 Iterator<Libro> iterator = libros.iterator();
                 System.out.println("El elemento : "+nombre+ "Ya existe, ingrese la cantidad de produtos para añadir al stock: \s");
                 int stock = scanner.nextInt();
+
                 while (iterator.hasNext()){
-                    if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
-                        iterator.next().setStock((this.getStock()+stock));
+                    Libro libro = iterator.next();
+                    if(libro.getNombre().equalsIgnoreCase(nombre)){
+                        stock += libro.getStock();
+                        libro.setStock(stock);
                     }
                 }
+                seccionLibros.setElementos(libros);
             }
-
-
             System.out.println("Desea cargar otro libro? s/n");
             control = scanner.next();
-
+            EscribirArchivo(seccionLibros);
         }while(control.equalsIgnoreCase("S"));
-
-        EscribirArchivo(seccionLibros);
     }
 
 
@@ -240,32 +240,53 @@ public class Libro extends itemVenta{
     }
 
     @Override
-    public void Venta(UUID ID) {
+    public void Venta(String nombre) {
         Seccion<Libro> seccionL = LeerArchivo();
         List<Libro> libros = seccionL.getElementos();
+        Iterator<Libro> iterator = seccionL.iterator();
 
-        for (var libro : libros){
-            if (libro.getID() == ID){
-                setStock(-1);
+        while (iterator.hasNext()){
+            Libro libro = iterator.next();
+            if (libro.getNombre().equalsIgnoreCase(nombre)){
+                int stock = libro.getStock();
+                stock--;
+                libro.setStock(stock);
             }
         }
         seccionL.setElementos(libros);
-
-
+        EscribirArchivo(seccionL);
     }
 
     @Override
-    public void DarDeBaja(UUID ID) {
+    public void DarDeBaja(String nombre) {
         Seccion<Libro> seccionL = LeerArchivo();
         List<Libro> libros = seccionL.getElementos();
         List<Libro> aux = new ArrayList<>();
-        int tope = seccionL.getTope();
-        for (int i = 0;i<tope;i++){
-            if (libros.get(i).getID() != ID){
-                aux.add(libros.get(i));
+        Iterator<Libro> iterator = libros.iterator();;
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto:");
+        int stockABajar = scanner.nextInt();
+
+        while (iterator.hasNext()){
+            Libro libro = iterator.next();
+            if (libro.getNombre().equalsIgnoreCase(nombre)){
+                if(stockABajar >= libro.getStock()){
+                    for (int i = 0; i < libros.size();i++){
+                        if(!libros.get(i).getNombre().equalsIgnoreCase(nombre)){
+                            aux.add(libros.get(i));
+                        }
+                    }
+                    seccionL.setElementos(aux);
+                }else {
+                    int stock = libro.getStock();
+                    stock -= stockABajar;
+                    libro.setStock(stock);
+                    seccionL.setElementos(libros);
+                }
             }
         }
-        seccionL.setElementos(aux);
+        EscribirArchivo(seccionL);
     }
 
     //region toString
