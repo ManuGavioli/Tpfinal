@@ -1,6 +1,7 @@
 package com.utn.Menu;
 
 import com.utn.Menu.Usuarios.Cliente;
+import com.utn.Menu.Usuarios.Staff;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -70,7 +71,7 @@ public class Inicio implements Menu {
             switch (caso) {
 
                 case 1 -> Cliente.MenuInic();
-                case 2 -> System.out.println("ACA EL MENU DE STAFF");
+                case 2 -> Staff.InicicStaff();
                 default -> System.out.println("Gracias por su atencion!!!");
 
             }

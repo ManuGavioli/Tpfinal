@@ -283,7 +283,7 @@ public class Cliente implements Menu , Serializable {
 
             }
 
-            if ((caso>=1 && caso<=6) || caso==0){
+            if (caso>=1 && caso<=6){
                 do{
 
                     try{
@@ -319,16 +319,15 @@ public class Cliente implements Menu , Serializable {
         }
     }
 
-    ///TODO TENGO QUE METER FUNCIONES ACA
     private static String SubOpcion(int caso,String name) throws NumException{
 
         if((caso>=1 && caso<=6) || caso==0){
 
             switch (caso) {
 
-                case 1 -> System.out.println("ACA BUSCAR PRODUCTO");
-                case 2 -> System.out.println("ACA LISTADO DE PRODUCTOS");
-                case 3 -> System.out.println("ACA COMPRAR PRODUCTOS");
+                case 1 -> BuscarItem();
+                case 2 -> Lista();
+                case 3 -> Venta(name);
                 case 4 -> MostrarCartera(name);
                 case 5 -> DepositarCartera();
                 case 6 -> name=VerModificar(name);
@@ -381,7 +380,114 @@ public class Cliente implements Menu , Serializable {
 
     }
 
+    //TODO ACA FALTA METER FUNCIONES
+    private static void Vender(int caso,String name) throws  NumException{
+
+        if((caso>=1 && caso<=3) || caso==0){
+
+            switch (caso) {
+                ///FALTA CORROBORAR SI SEGUN EL PRECIO Y LA CARTERA SE PUEDE COMPRAR EL PRODUCTO...
+                case 1 -> System.out.println("ACA IRIA DE LIBRO");
+                case 2 -> System.out.println("ACA IRIA DE JM");
+                case 3 -> System.out.println("ACA IRIA DE DS");
+                default -> System.out.println("...");
+
+            }
+        }else{
+            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
+
+        }
+
+    }
+
+    //TODO ACA FALTA METER FUNCIONES
+    private static void Buscar(int caso) throws  NumException{
+
+        if((caso>=1 && caso<=3) || caso==0){
+
+            switch (caso) {
+                case 1 -> System.out.println("ACA IRIA DE LIBRO");
+                case 2 -> System.out.println("ACA IRIA DE JM");
+                case 3 -> System.out.println("ACA IRIA DE DS");
+                default -> System.out.println("...");
+
+            }
+        }else{
+            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
+
+        }
+
+    }
+
+    //TODO ACA FALTA METER FUNCIONES
+    private static void Listado(int caso) throws  NumException{
+
+        if((caso>=1 && caso<=3) || caso==0){
+
+            switch (caso) {
+                case 1 -> System.out.println("ACA IRIA DE LIBRO");
+                case 2 -> System.out.println("ACA IRIA DE JM");
+                case 3 -> System.out.println("ACA IRIA DE DS");
+                default -> System.out.println("...");
+
+            }
+        }else{
+            throw new NumException("El valor ingresado es incorrecto...\nVuelva a intentar\n");
+
+        }
+
+    }
+
     ///endregion
+
+
+    private static void Venta(String name){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el tipo de producto que desea buscar: ");
+        System.out.println("1.Libro\n2.Juego de Mesa\nDisco");
+        int caso = scanner.nextInt();
+
+        try {
+            Vender(caso,name);
+
+        } catch (NumException | InputMismatchException e) {
+            e.printStackTrace();
+
+        }
+
+    }
+
+    private static void BuscarItem(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el tipo de producto que desea buscar: ");
+        System.out.println("1.Libro\n2.Juego de Mesa\nDisco");
+        int caso = scanner.nextInt();
+
+        try {
+            Buscar(caso);
+
+        } catch (NumException | InputMismatchException e) {
+            e.printStackTrace();
+
+        }
+
+    }
+
+    private static void Lista(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el tipo de producto que desea buscar: ");
+        System.out.println("1.Libro\n2.Juego de Mesa\nDisco");
+        int caso = scanner.nextInt();
+
+        try {
+            Listado(caso);
+
+        } catch (NumException | InputMismatchException e) {
+            e.printStackTrace();
+
+        }
+
+    }
 
     private static String controlar() throws Exception{
 
