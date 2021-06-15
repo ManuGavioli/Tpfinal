@@ -49,22 +49,30 @@ public class JuegoMesa extends itemVenta{
     }
 
     @Override
-    public void VerificarStock(String nombre) {
+    public void VerificarStock() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el nombre del juego de mesa del cual desea saber el stock");
+        String nombre = scanner.nextLine();
+        boolean flag = false;
+
         List <JuegoMesa> juegos = LeerArchivo().getElementos();
         Iterator <JuegoMesa> iterator = juegos.iterator();
 
         while (iterator.hasNext()){
-            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
-                if(iterator.next().getStock()<=0){
-                    System.out.println("Las unidades de este produto se encuentran agotadas");
+            JuegoMesa juego = iterator.next();
+            if(juego.getNombre().equalsIgnoreCase(nombre)){
+                flag = true;
+                if(juego.getStock() >= 1){
+                    System.out.println("Quedan en deposito " + juego.getStock() + " unidades de este juego de mesa");
                 }else{
-                    System.out.println("Quedan en deposito "+iterator.next().getStock()+" unidades de este producto");
+                    System.out.println("Las unidades de este juego de mesa se encuentran agotadas");
                 }
-
             }
         }
+        if(!flag){
+            System.out.println("No se encontro el nombre en el archivo");
+        }
     }
-
 
     @Override
     public Seccion LeerArchivo() {
@@ -228,7 +236,11 @@ public class JuegoMesa extends itemVenta{
     }
 
     @Override
-    public void Venta(String nombre) {
+    public void Venta() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Escriba el nombre del juego de mesa a comprar");
+        String nombre = scanner.nextLine();
+
         Seccion <JuegoMesa> juegosDeMesa = new Seccion<>(50);
         List<JuegoMesa> seccionJM = LeerArchivo().getElementos();
         Iterator<JuegoMesa> iterator = seccionJM.iterator();
@@ -246,13 +258,16 @@ public class JuegoMesa extends itemVenta{
     }
 
     @Override
-    public void DarDeBaja(String nombre) {
+    public void DarDeBaja() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el nombre del juego de mesa que desea dar de baja");
+        String nombre = scanner.nextLine();
+
         Seccion<JuegoMesa> seccionJM = LeerArchivo();
         List<JuegoMesa> juegos = seccionJM.getElementos();
 
         Iterator<JuegoMesa> iterator = juegos.iterator();
         List<JuegoMesa> aux = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto: ");
         int stockABajar = scanner.nextInt();

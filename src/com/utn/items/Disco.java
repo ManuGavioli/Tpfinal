@@ -6,8 +6,10 @@ import com.google.gson.reflect.TypeToken;
 import com.utn.items.enums.ClasificacionEdad;
 import com.utn.items.enums.GenerosD;
 
+import javax.swing.text.DateFormatter;
 import java.io.*;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -17,17 +19,17 @@ public class Disco extends itemVenta{
     private String Solo_Banda;
     private ArrayList<String> Canciones;
     private GenerosD Genero;
-    private LocalDateTime FechaLanzamiento;
+    private LocalDate FechaLanzamiento;
 
     //region Constructores
 
-    public Disco(String solo_Banda, GenerosD genero, LocalDateTime fechaLanzamiento) {
+    public Disco(String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento) {
         Solo_Banda = solo_Banda;
         Genero = genero;
         FechaLanzamiento = fechaLanzamiento;
     }
 
-    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDateTime fechaLanzamiento,int stock) {
+    public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda, GenerosD genero, LocalDate fechaLanzamiento,int stock) {
         super(precio, nombre, clasificacion,stock);
         Solo_Banda = solo_Banda;
         Genero = genero;
@@ -35,7 +37,7 @@ public class Disco extends itemVenta{
     }
 
     public Disco(float precio, String nombre, ClasificacionEdad clasificacion, String solo_Banda,
-                 ArrayList<String> canciones, GenerosD genero, LocalDateTime fechaLanzamiento,int stock) {
+                 ArrayList<String> canciones, GenerosD genero, LocalDate fechaLanzamiento,int stock) {
         super(precio, nombre, clasificacion,stock);
         Solo_Banda = solo_Banda;
         Canciones = canciones;
@@ -58,8 +60,8 @@ public class Disco extends itemVenta{
     public GenerosD getGenero() { return Genero; }
     public void setGenero(GenerosD genero) { Genero = genero; }
 
-    public LocalDateTime getFechaLanzamiento() { return FechaLanzamiento; }
-    public void setFechaLanzamiento(LocalDateTime fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
+    public LocalDate getFechaLanzamiento() { return FechaLanzamiento; }
+    public void setFechaLanzamiento(LocalDate fechaLanzamiento) { FechaLanzamiento = fechaLanzamiento; }
     //endregion
 
     public ArrayList <String> AñadirCanciones(){
@@ -91,21 +93,30 @@ public class Disco extends itemVenta{
     }
 
     @Override
-    public void VerificarStock(String nombre) {
+    public void VerificarStock() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el nombre del disco del cual desea saber el stock");
+        String nombre = scanner.nextLine();
+        boolean flag = false;
+
         List <Disco> discos = LeerArchivo().getElementos();
         Iterator <Disco> iterator = discos.iterator();
 
         while (iterator.hasNext()){
-            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
-                if(iterator.next().getStock()<=0){
-                    System.out.println("Las unidades de este produto se encuentran agotadas");
+            Disco disco = iterator.next();
+            if(disco.getNombre().equalsIgnoreCase(nombre)){
+                flag = true;
+                if(disco.getStock() >= 1){
+                    System.out.println("Quedan en deposito " + disco.getStock() + " unidades de este disco");
                 }else{
-                    System.out.println("Quedan en deposito "+iterator.next().getStock()+" unidades de este producto");
+                    System.out.println("Las unidades de este disco se encuentran agotadas");
                 }
             }
         }
+        if(!flag){
+            System.out.println("No se encontro el nombre en el archivo");
+        }
     }
-
 
     @Override
     public Seccion LeerArchivo() {
@@ -230,11 +241,10 @@ public class Disco extends itemVenta{
                 }while(gen != 1 && gen != 2 && gen != 3 && gen != 4 && gen != 5 && gen != 6 && gen != 7 && gen != 8);
                 //endregion
 
-                DateTimeFormatter formatterOfPatterns = DateTimeFormatter.ofPattern("d/M/u , h:m:s a");
-                System.out.println("Ingrese la fecha de lanzamiento del disco (Dia/Mes/Año): ");
-                String fechaAux = scanner.nextLine();
-                LocalDateTime fecha = LocalDateTime.parse(fechaAux,formatterOfPatterns);
-                //todo Arreglar localdatetime parse error
+                System.out.println("Ingrese la fecha de lanzamiento del disco (año-mes-dia): ");
+                Scanner scanner2 = new Scanner(System.in);
+                String fechaString = scanner2.nextLine();
+                LocalDate fecha = LocalDate.parse(fechaString);
 
                 Disco disco = new Disco(precio,nombre,clasEdad,soloBanda,canciones,genderD,fecha,stock);
                 if(seccionDiscos.agregarElemento(disco)){
@@ -288,9 +298,13 @@ public class Disco extends itemVenta{
     }
 
     @Override
-    public void Venta(String nombre) {
-        Seccion<Disco> seccionD = new Seccion<>(50);
-        List<Disco> discos = LeerArchivo().getElementos();
+    public void Venta() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Escriba el nombre del disco a comprar");
+        String nombre = scanner.nextLine();
+
+        Seccion<Disco> discos = new Seccion<>(50);
+        List<Disco> seccionD = LeerArchivo().getElementos();
         Iterator <Disco> iterator = seccionD.iterator();
 
         while (iterator.hasNext()){
@@ -301,18 +315,21 @@ public class Disco extends itemVenta{
                 disco.setStock(stock);
             }
         }
-        seccionD.setElementos(discos);
-        EscribirArchivo(seccionD);
+        discos.setElementos(seccionD);
+        EscribirArchivo(discos);
     }
 
     @Override
-    public void DarDeBaja(String nombre) {
+    public void DarDeBaja() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Escriba el nombre del disco que desea dar de baja");
+        String nombre = scanner.nextLine();
+
         Seccion<Disco> seccionD = LeerArchivo();
         List<Disco> discos = seccionD.getElementos();
 
         Iterator <Disco> iterator = discos.iterator();
         List<Disco> aux = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto: ");
         int stockABajar = scanner.nextInt();

@@ -71,7 +71,7 @@ public abstract class itemVenta {
 
     public abstract void CrearArchivo();
 
-    public abstract void VerificarStock(String nombre);
+    public abstract void VerificarStock();
 
     public abstract Seccion LeerArchivo();
 
@@ -83,9 +83,9 @@ public abstract class itemVenta {
 
     public abstract boolean BuscarItems(String nombre);
 
-    public abstract void Venta(String nombre);
+    public abstract void Venta();
 
-    public abstract void DarDeBaja(String nombre);
+    public abstract void DarDeBaja();
 
     @Override
     public String toString() {

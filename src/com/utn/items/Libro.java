@@ -65,18 +65,28 @@ public class Libro extends itemVenta{
     }
 
     @Override
-    public void VerificarStock(String nombre) {
+    public void VerificarStock() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese el nombre del libro del cual desea saber el stock");
+        String nombre = scanner.nextLine();
+        boolean flag = false;
+
         List <Libro> libros = LeerArchivo().getElementos();
         Iterator <Libro> iterator = libros.iterator();
 
         while (iterator.hasNext()){
-            if(iterator.next().getNombre().equalsIgnoreCase(nombre)){
-                if(iterator.next().getStock()<=0){
-                    System.out.println("Las unidades de este produto se encuentran agotadas");
+            Libro libro = iterator.next();
+            if(libro.getNombre().equalsIgnoreCase(nombre)){
+                flag = true;
+                if(libro.getStock() >= 1){
+                    System.out.println("Quedan en deposito "+libro.getStock()+" unidades de este producto");
                 }else{
-                    System.out.println("Quedan en deposito "+iterator.next().getStock()+" unidades de este producto");
+                    System.out.println("Las unidades de este produto se encuentran agotadas");
                 }
             }
+        }
+        if(!flag){
+            System.out.println("No se encontro el nombre en el archivo");
         }
     }
 
@@ -90,15 +100,17 @@ public class Libro extends itemVenta{
         try{
             reader = new BufferedReader(new FileReader(new File("libros.json")));
             aux = gson.fromJson(reader,seccion);
-        }catch (IOException e){
+        } catch (FileNotFoundException e){
+            return aux;
+        } catch (IOException e){
             e.printStackTrace();
-        }finally {
-            try{
-                if (reader != null){
+        } finally {
+            if (reader != null){
+                try{
                     reader.close();
+                }catch (IOException e){
+                    e.printStackTrace();
                 }
-            }catch (IOException e){
-                e.printStackTrace();
             }
         }
         return aux;
@@ -135,7 +147,7 @@ public class Libro extends itemVenta{
 
         do {
             Scanner scanner = new Scanner (System.in);
-            System.out.println("Ingrese El nombre del libro: ");
+            System.out.println("Ingrese el nombre del libro: ");
             String nombre = scanner.nextLine();
             boolean flag = BuscarItems(nombre);
 
@@ -231,7 +243,6 @@ public class Libro extends itemVenta{
         }while(control.equalsIgnoreCase("S"));
     }
 
-
     @Override
     public void MostrarListado() {
         List <Libro> libros = LeerArchivo().getElementos();
@@ -256,7 +267,11 @@ public class Libro extends itemVenta{
     }
 
     @Override
-    public void Venta(String nombre) {
+    public void Venta() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Escriba el nombre del libro a comprar");
+        String nombre = scanner.nextLine();
+
         Seccion<Libro> seccionL = LeerArchivo();
         List<Libro> libros = seccionL.getElementos();
         Iterator<Libro> iterator = seccionL.iterator();
@@ -274,12 +289,15 @@ public class Libro extends itemVenta{
     }
 
     @Override
-    public void DarDeBaja(String nombre) {
+    public void DarDeBaja() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Escriba el nombre del libro que desea dar de baja");
+        String nombre = scanner.nextLine();
+
         Seccion<Libro> seccionL = LeerArchivo();
         List<Libro> libros = seccionL.getElementos();
         List<Libro> aux = new ArrayList<>();
         Iterator<Libro> iterator = libros.iterator();;
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Ingrese la cantidad de stock que desea dar de baja del producto:");
         int stockABajar = scanner.nextInt();
